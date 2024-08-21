@@ -41,8 +41,9 @@
                                                 <input class="form-control py-4" id="document" name="document" type="text" placeholder="Escribe tu numero de documento" />
                                             </div>
                                             <div class="form-group">
-                                                <label class="small mb-1" for="lastname"><i class="fas fa-user"></i>Primer apellido</label>
-                                                <input class="form-control py-4" id="lastname" name="lastname" type="text" placeholder="Escribe tu primer apellido" autocomplete="family-name" />
+                                                <label class="small mb-1" for="firstname"><i class="fas fa-user"></i>Primer apellido</label>
+                                                <input class="form-control py-4" id="firstname" name="firstname" type="text" placeholder="Escribe tu primer apellido" autocomplete="family-name" />
+
                                             </div>
                                             <div class="form-group">
                                                 <label class="small mb-1" for="birthdate"><i class="fas fa-user"></i>Fecha de Nacimiento</label>
@@ -53,7 +54,7 @@
                                                 <input class="form-control py-4" id="password" name="password" type="password" placeholder="Escribe tu contraseña" autocomplete="new-password" />
                                             </div>
                                             <div class="form-group">
-                                                <label class="small mb-1" for="password2"><i class="fas fa-key"></i>Confirmar contraseña</label>
+                                                <label class="small mb-1" for="confirm_password"><i class="fas fa-key"></i>Confirmar contraseña</label>
                                                 <input class="form-control py-4" id="confirm_password" name="confirm_password" type="password" placeholder="Confirma tu contraseña" autocomplete="new-password" />
                                             </div>
                                             <div class="alert alert-danger text-center d-none" id="alerta" role="alert">

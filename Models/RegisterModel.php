@@ -7,7 +7,7 @@ class RegisterModel extends Query{
     }
     public function getRegister(String $document)
     {
-        $sql = "SELECT * FROM Pacientes WHERE Identificacion = '$document'";
+        $sql = "SELECT Identificacion , Ape1Afil , FechaNac FROM Pacientes WHERE Identificacion = '$document'";
         $data = $this->select($sql);
         return $data;
     }

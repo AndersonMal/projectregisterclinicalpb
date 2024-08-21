@@ -15,24 +15,40 @@ class RegisterController extends Controller {
         //print_r($this->model->getUser())
         $this->views->getView($this, "registersrout");
     }
-
-    public function validate(){
-        $document = $_POST['document'];
-        $lastname = $_POST['lastname'];
-        $birthdate = $_POST['birthdate'];
-        $user = $this->registermodel->getRegister($document);
-
-        if ($user) {
-            if ($user['Apellido'] == $lastname && $user['FechaNacimiento'] == $birthdate) {
-                echo json_encode("Ok");
+    public function validate() {
+        try {
+            if(empty($_POST['document'])) {
+                $msg = "Documento no encontrado";
             } else {
-                echo json_encode("Datos incorrectos");
-            }
-        } else {
-            echo json_encode("El usuario no existe");
-        }
+                $user = $_POST['document'];
+                $firstname = $_POST['firstname'];
 
+                if ($firstname === null) {
+                    $msg = "Primer apellido no encontrado";
+                } else {
+                    $data = $this->registermodel->getRegister($user);
+
+                    if ($data && $data['Ape1Afil'] === $firstname) {
+                        $_SESSION['id_user'] = $data['Identificacion'];
+                        $_SESSION['firstname'] = $data['Ape1Afil'];
+                        $msg = "Ok";
+                    } else {
+                        $msg = "Usuario incorrecto o apellido no coincide";
+                    }
+                }
+            }
+
+            // Envía la respuesta en formato JSON
+            echo json_encode($msg, JSON_UNESCAPED_UNICODE);
+        } catch (Exception $e) {
+            echo json_encode("Error: " . $e->getMessage());
+        }
+        die();
     }
+
+    
+    
+    
 
 
 }
