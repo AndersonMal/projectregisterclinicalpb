@@ -2,18 +2,16 @@
 
 class Query extends Conexion
 {
-    private $pdo, $con, $sql;
-    public function __construct() {
-        $this->pdo = new Conexion();
-        $this->con = $this->pdo->getConnection();
+    private $con;
+
+    public function __construct($connection) {
+        $this->con = $connection;
     }
-    public function select(string $sql)
-    {
-        $this->sql = $sql;
-        $resul = $this->con->prepare($this->sql);
-        $resul->execute();
-        $data = $resul->fetch(PDO::FETCH_ASSOC);
-        return $data;
+
+    public function select(string $sql, array $params = []) {
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 

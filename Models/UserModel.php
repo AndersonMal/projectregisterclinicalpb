@@ -1,13 +1,13 @@
 <?php 
 
 class UserModel extends Query{
-    public function __construct()
+    public function __construct($connection)
     {
-        parent::__construct();
+        parent::__construct($connection);
     }
     public function getUser(String $document)
     {
-        $sql = "SELECT * FROM Pacientes WHERE Identificacion = '$document'";
+        $sql = "SELECT * FROM user_registered WHERE numeroDocumento = '$document'";
         $data = $this->select($sql);
         return $data;
     }

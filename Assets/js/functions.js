@@ -13,20 +13,28 @@ function frmLogin(e){
     }else{
         const url = base_url + "Users/validate";
         const frm = document.getElementById("frmLogin");
+        const formData = new FormData(frm);
         const http = new XMLHttpRequest();
         http.open("POST", url, true);
-        http.send(new FormData(frm));
+        http.send(formData);
         http.onreadystatechange = function(){
             if(this.readyState == 4 && this.status == 200){
-                const res = JSON.parse(this.responseText);
-                if(res == "Ok"){
-                    window.location = base_url + "Users";
-                }else{
-                    document.getElementById("alerta").classList.remove("d-none");
-                    document.getElementById("alerta").innerHTML = res;
+                try {
+                    const res = JSON.parse(this.responseText);
+                    if(res === "Ok"){
+                        window.location = base_url + "Users";
+                    } else {
+                        document.getElementById("alerta").classList.remove("d-none");
+                        document.getElementById("alerta").innerHTML = res;
+                    }
+                } catch (error) {
+                    console.error("Error parsing JSON:", error);
+                    console.error("Response text:", this.responseText);
                 }
             }
         }
+
+
     }
 
 }
@@ -38,6 +46,7 @@ function frmRegister(e) {
     const birthdate = document.getElementById("birthdate");
     const password = document.getElementById("password");
     const confirm_password = document.getElementById("confirm_password");
+
 
     if(user.value == ""){
         firstname.classList.remove("is-invalid");
@@ -82,7 +91,7 @@ function frmRegister(e) {
         http.open("POST", url, true);
         http.send(formData);
         http.onreadystatechange = function(){
-            if(this.readyState === 4 && this.status === 200){
+            if(this.readyState == 4 && this.status == 200){
                 try {
                     const res = JSON.parse(this.responseText);
                     if(res === "Ok"){
