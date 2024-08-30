@@ -13,12 +13,28 @@ class Users extends Controller{
 
     public function index()
     {
+        if (!isset($_SESSION['id_user'])) {
+            header("Location: " . base_url );
+            exit();
+        }
         //print_r($this->model->getUser());
         $this->views->getView($this, "index");
     }
 
+    public function logout() {
+        session_unset();
+        session_destroy();
+        header("Location: " . base_url );
+        exit();
+    }
+
     public function validate(){
         try {
+            if(isset($_POST['logout']))
+                {
+                    session_destroy();
+                    unset($_SESSION['username']);
+                }
             if(empty($_POST['document']) || empty($_POST['password'])){
                 $msg = "Los campos estan vacios";
             } else {
@@ -39,7 +55,6 @@ class Users extends Controller{
         }
         die();
     }
-
 }
 
 ?>

@@ -13,7 +13,7 @@ class RegisterController extends Controller {
     }
 
     public function index()
-    {
+    {   
         $this->views->getView($this, "registersrout");
     }
 
@@ -63,5 +63,6 @@ class RegisterController extends Controller {
         }
         die();
     }
+
 }
 ?>

@@ -8,7 +8,7 @@
         <meta name="author" content="" />
         <title>Registro clínico</title>
         <link href="<?php echo base_url; ?>/Assets/css/styles.css" rel="stylesheet" />
-        <script src="<?php echo base_url; ?>Assets/js/all.min.js" crossorigin="anonymous"></script>
+        <script src="<?php echo base_url; ?>/Assets/js/all.min.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -24,7 +24,9 @@
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                         <a class="dropdown-item" href="#">Ayuda</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="login.html">Cerrar sesión</a>
+                        <form id="logout" method="POST" action="<?php echo base_url; ?>Users/logout">
+                        <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                    </form>
                     </div>
                 </li>
             </ul>
@@ -68,35 +70,36 @@
                         </ol>
                         
                         <div class="container mt-5">                         
-                            <table class="table table-bordered">
+                            <table class="table table-bordered"  id="dataTable" width="100%" cellspacing="0">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Registros Clínicos</th>
-                                        <th>Tipo de Registro</th>
+                                        <th>Tipo de Servicio</th>
                                         <th>Fechas</th>
                                         <th>Ver</th>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" class="form-control" placeholder="Buscar por Registros Clínicos"></td>
-                                        <td><input type="text" class="form-control" placeholder="Buscar por Tipo de Registro"></td>
+                                        <td><input type="text" class="form-control" placeholder="Buscar por Registros Clínicos" onkeyup="showHint(this.value)"></td>
+                                        <td><input type="text" class="form-control" placeholder="Buscar por Tipo de Servicio"></td>
                                         <td><input type="date" class="form-control" placeholder="Buscar por Fechas"></td>
                                         <td></td>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                <?php if (!empty($data)) { ?>
+                                    <?php foreach ($data as $row) { ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($row->Nombre); ?></td>
+                                            <td><?php echo htmlspecialchars($row->Descrip); ?></td>
+                                            <td><?php echo htmlspecialchars($row->FechaHora); ?></td>
+                                            <td><button class="btn btn-primary">Ver</button></td>
+                                        </tr>
+                                    <?php } ?>
+                                <?php } else { ?>
                                     <tr>
-                                        <td>Registro 1</td>
-                                        <td>Tipo A</td>
-                                        <td>2024-01-01</td>
-                                        <td><button class="btn btn-primary">Ver</button></td>
+                                        <td colspan="4">No hay registros para mostrar.</td>
                                     </tr>
-                                    <tr>
-                                        <td>Registro 2</td>
-                                        <td>Tipo B</td>
-                                        <td>2024-02-15</td>
-                                        <td><button class="btn btn-primary">Ver</button></td>
-                                    </tr>
-                                    <!-- Más filas de datos -->
+                                <?php } ?>
                                 </tbody>
                             </table>
 
@@ -115,10 +118,6 @@
 
                     </div>
                 </main>
-                
-
-
-
 
 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">
@@ -137,10 +136,7 @@
         <script src="<?php echo base_url; ?>Assets/js/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/scripts.js"></script>
-        <script src="<?php echo base_url; ?>Assets/js/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="<?php echo base_url; ?>Assets/demo/chart-area-demo.js"></script>
-        <script src="<?php echo base_url; ?>Assets/demo/chart-bar-demo.js"></script>
-        <script src="<?php echo base_url; ?>Assets/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+
     </body>
 </html>
 
