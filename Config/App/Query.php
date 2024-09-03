@@ -13,6 +13,13 @@ class Query extends Conexion
         $stmt->execute($params);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function selectAll(string $sql, array $params = []) {
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+
 }
 
 ?>

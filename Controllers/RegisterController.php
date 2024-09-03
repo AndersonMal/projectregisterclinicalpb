@@ -63,6 +63,6 @@ class RegisterController extends Controller {
         }
         die();
     }
-
+    
 }
 ?>

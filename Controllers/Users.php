@@ -8,7 +8,7 @@ class Users extends Controller{
         session_start();
         parent::__construct();
         $conexion = new Conexion();
-        $this->model = new UserModel($conexion->getConnection2()); 
+        $this->model = new UserModel($conexion->getConnection2(),$conexion->getConnection()); 
     }
 
     public function index()
@@ -44,6 +44,7 @@ class Users extends Controller{
                 if($data && $data['contraseña']==$password){
                     $_SESSION['id_user'] = $data['numeroDocumento'];
                     $_SESSION['name'] = $data['primerApellido'];
+                    $_SESSION['identification'] = $data['numeroDocumento'];
                     $msg = "Ok";
                 } else {
                     $msg = "Usuario o contraseña incorrecta";
@@ -55,6 +56,16 @@ class Users extends Controller{
         }
         die();
     }
+
+    public function listRegistersClinical(){
+        
+        $data = $this->model->getRegisters($_SESSION['id_user']);
+        $data = json_decode($data, false);
+        $this->views->getView($this, "index", $data);
+
+
+    }
+
 }
 
 ?>

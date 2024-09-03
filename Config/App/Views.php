@@ -11,6 +11,7 @@ class Views {
         }
         
         if (file_exists($viewPath)) {
+            extract($data);
             require $viewPath;
         } else {
             echo "Vista no encontrada: " . $viewPath;

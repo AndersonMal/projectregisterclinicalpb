@@ -28,7 +28,6 @@ class RegisterModel extends Query{
     }
 
     public function getClinicalData($identification) {
-        // Preparar la consulta SQL con parámetros
         $sql = "SELECT R.Nombre, U.Descrip, C.FechaHora 
                 FROM Pacientes P
                 INNER JOIN Casos C ON P.Id = C.Paciente
@@ -41,7 +40,8 @@ class RegisterModel extends Query{
         $stmt->bindParam(':identification', $identification, PDO::PARAM_STR);
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_OBJ);
-        return $data ?: [];
+        
+        return $data;;
     }
 
 }

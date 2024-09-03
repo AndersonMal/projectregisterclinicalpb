@@ -1,3 +1,8 @@
+<?php 
+include_once 'Models/RegistersClinicalModel.php';
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -8,7 +13,19 @@
         <meta name="author" content="" />
         <title>Registro clínico</title>
         <link href="<?php echo base_url; ?>/Assets/css/styles.css" rel="stylesheet" />
+        <link href="<?php echo base_url; ?>/Assets/css/bootstrap.min.css" rel="stylesheet" />
         <script src="<?php echo base_url; ?>/Assets/js/all.min.js" crossorigin="anonymous"></script>
+        <script>
+             $("#modalHelp").modal({
+                  modal: true,
+                  buttons: {
+                    Ok: function() {
+                      $( this ).modal( "close" );
+                    }
+                  }
+                });
+            
+        </script>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -22,7 +39,32 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="#">Ayuda</a>
+                        <!-- Button trigger modal -->
+                        <button id="modalHelp" type="button" class="dropdown-item" data-toggle="modal" data-target="#exampleModalLong">
+                        ¿Necesitas Ayuda?
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                <p>Some text in the modal.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+
                         <div class="dropdown-divider"></div>
                         <form id="logout" method="POST" action="<?php echo base_url; ?>Users/logout">
                         <button type="submit" class="dropdown-item">Cerrar sesión</button>
@@ -70,38 +112,31 @@
                         </ol>
                         
                         <div class="container mt-5">                         
-                            <table class="table table-bordered"  id="dataTable" width="100%" cellspacing="0">
-                                <thead class="thead-light">
+                        <table  class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Registros Clínicos</th>
+                                    <th>Tipo de Servicio</th>
+                                    <th>Fechas</th>
+                                    <th>Ver</th>
+                                </tr>
+                            </thead>
+                           
+                            <?php if (!empty($data)) : ?>
+                                <?php foreach ($data as $row) : ?>
                                     <tr>
-                                        <th>Registros Clínicos</th>
-                                        <th>Tipo de Servicio</th>
-                                        <th>Fechas</th>
-                                        <th>Ver</th>
+                                        <td><?php print_r($row->Nombre); ?></td> 
+                                        <td><?php print_r($row->Descrip); ?></td> 
+                                        <td><?php print_r($row->FechaHora); ?></td> 
+                                        <td class="text-center"><button class="btn btn-primary">Ver</button></td>
                                     </tr>
-                                    <tr>
-                                        <td><input type="text" class="form-control" placeholder="Buscar por Registros Clínicos" onkeyup="showHint(this.value)"></td>
-                                        <td><input type="text" class="form-control" placeholder="Buscar por Tipo de Servicio"></td>
-                                        <td><input type="date" class="form-control" placeholder="Buscar por Fechas"></td>
-                                        <td></td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php if (!empty($data)) { ?>
-                                    <?php foreach ($data as $row) { ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($row->Nombre); ?></td>
-                                            <td><?php echo htmlspecialchars($row->Descrip); ?></td>
-                                            <td><?php echo htmlspecialchars($row->FechaHora); ?></td>
-                                            <td><button class="btn btn-primary">Ver</button></td>
-                                        </tr>
-                                    <?php } ?>
-                                <?php } else { ?>
-                                    <tr>
-                                        <td colspan="4">No hay registros para mostrar.</td>
-                                    </tr>
-                                <?php } ?>
-                                </tbody>
-                            </table>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan="4">No se encontraron registros clínicos.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </table>
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -135,7 +170,10 @@
         </div>
         <script src="<?php echo base_url; ?>Assets/js/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="<?php echo base_url; ?>Assets/js/popper.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/scripts.js"></script>
+        <script src="<?php echo base_url; ?>Assets/js/functions.js"></script>
+        
 
     </body>
 </html>
