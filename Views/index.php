@@ -55,7 +55,9 @@
                                         </form>
                                     </div>
                                     <div class="card-footer text-center">
-                                        <div class="small"><a href="register.html">¿No te has registrado? ¡Registrate aquí!</a></div>
+                                        <div class="small">
+                                            <a href="<?php echo base_url; ?>RegisterController/index">¿No te has registrado? ¡Registrate aquí!</a>                                    
+                                        </div>
                                     </div>
                                 </div>
                             </div>

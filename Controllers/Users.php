@@ -60,7 +60,7 @@ class Users extends Controller{
     public function listRegistersClinical(){
         
         $data = $this->model->getRegisters($_SESSION['id_user']);
-        $data = json_decode($data, false);
+        $data = json_decode($data);
         $this->views->getView($this, "index", $data);
 
 

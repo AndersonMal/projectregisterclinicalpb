@@ -13,24 +13,11 @@ include_once 'Models/RegistersClinicalModel.php';
         <meta name="author" content="" />
         <title>Registro clínico</title>
         <link href="<?php echo base_url; ?>/Assets/css/styles.css" rel="stylesheet" />
-        <link href="<?php echo base_url; ?>/Assets/css/bootstrap.min.css" rel="stylesheet" />
         <script src="<?php echo base_url; ?>/Assets/js/all.min.js" crossorigin="anonymous"></script>
-        <script>
-             $("#modalHelp").modal({
-                  modal: true,
-                  buttons: {
-                    Ok: function() {
-                      $( this ).modal( "close" );
-                    }
-                  }
-                });
-            
-        </script>
     </head>
-    <body class="sb-nav-fixed">
+    <body class="sb-nav-fixed sb-sidenav-toggled">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <img src="<?php echo base_url; ?>/Assets/css/v9_58.png" id="imglogo">
-            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
             </form>
@@ -66,7 +53,7 @@ include_once 'Models/RegistersClinicalModel.php';
                         </div>
 
                         <div class="dropdown-divider"></div>
-                        <form id="logout" method="POST" action="<?php echo base_url; ?>Users/logout">
+                    <form id="logout" method="POST" action="<?php echo base_url; ?>Users/logout">
                         <button type="submit" class="dropdown-item">Cerrar sesión</button>
                     </form>
                     </div>
@@ -74,35 +61,7 @@ include_once 'Models/RegistersClinicalModel.php';
             </ul>
         </nav>
         <div id="layoutSidenav">
-            <div id="layoutSidenav_nav">
-                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                    <div class="sb-sidenav-menu">
-                        <div class="nav">
-                           
-                            <div class="sb-sidenav-menu-heading">Interface</div>
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                Layouts
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">Static Navigation</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
-                                </nav>
-                            </div>
-                            <a class="nav-link" href="tables.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                                Notificaciones
-                            </a>
-                        </div>
-                    </div>
-                    <div class="sb-sidenav-footer">
-                        <div class="small">Sesion iniciada por:</div>
-                        Administrador
-                    </div>
-                </nav>
-            </div>
+            
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid">
@@ -111,32 +70,45 @@ include_once 'Models/RegistersClinicalModel.php';
                             <li class="breadcrumb-item active">Escriba el nombre del registro que desea buscar, puede buscar ya sea por el nombre del registro, por el tipo del registro o por la fecha</li>
                         </ol>
                         
-                        <div class="container mt-5">                         
-                        <table  class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Registros Clínicos</th>
-                                    <th>Tipo de Servicio</th>
-                                    <th>Fechas</th>
-                                    <th>Ver</th>
-                                </tr>
-                            </thead>
-                           
-                            <?php if (!empty($data)) : ?>
-                                <?php foreach ($data as $row) : ?>
+                        <div class="container mt-5">       
+                            <div class="rowSearch">
+                                <form class="d-flex">
+                                    <input type="date" class="form-control light-table-filter" id="dateinit" name="dateinit"  style="width: 16%">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="date" class="form-control light-table-filter" id="datefinal" name="datefinal"  style="width: 16%">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="text" class="form-control light-table-filter" data-table="table" id="search_table" placeholder="Buscar registros clinicos"  style="width: 50%">
+                                    
+                                </form>
+
+                            </div>
+                            <br>
+                            <br>
+                            <table  class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
                                     <tr>
-                                        <td><?php print_r($row->Nombre); ?></td> 
-                                        <td><?php print_r($row->Descrip); ?></td> 
-                                        <td><?php print_r($row->FechaHora); ?></td> 
-                                        <td class="text-center"><button class="btn btn-primary">Ver</button></td>
+                                        <th>Registros Clínicos</th>
+                                        <th>Tipo de Servicio</th>
+                                        <th>Fechas</th>
+                                        <th>Ver</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <tr>
-                                    <td colspan="4">No se encontraron registros clínicos.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </table>
+                                </thead>
+                            
+                                <?php if (!empty($data)) : ?>
+                                    <?php foreach ($data as $row) : ?>
+                                        <tr>
+                                            <td><?php print_r($row->Nombre); ?></td> 
+                                            <td><?php print_r($row->Descrip); ?></td> 
+                                            <td><?php print_r($row->FechaHora); ?></td> 
+                                            <td class="text-center"><button class="btn btn-primary">Ver</button></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <tr>
+                                        <td colspan="4">No se encontraron registros clínicos.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </table>
 
                             <div class="row">
                                 <div class="col-md-6">
