@@ -148,3 +148,11 @@ function frmRegister(e) {
     });
 
 })(document);
+
+function modalHelp1(){
+    $("#modalHelp").modal("show");
+}
+
+function modalClose(){
+    $("#modalHelp").modal("hide");
+}

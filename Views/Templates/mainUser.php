@@ -12,7 +12,9 @@ include_once 'Models/RegistersClinicalModel.php';
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Registro clínico</title>
-        <link href="<?php echo base_url; ?>/Assets/css/styles.css" rel="stylesheet" />
+
+        <link href="<?php echo base_url; ?>Assets/css/styles.css" rel="stylesheet" />
+        <link href="<?php echo base_url; ?>Assets/css/bootstrap.min.css" rel="stylesheet" />
         <script src="<?php echo base_url; ?>/Assets/js/all.min.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed sb-sidenav-toggled">
@@ -27,30 +29,12 @@ include_once 'Models/RegistersClinicalModel.php';
                     <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                         <!-- Button trigger modal -->
-                        <button id="modalHelp" type="button" class="dropdown-item" data-toggle="modal" data-target="#exampleModalLong">
-                        ¿Necesitas Ayuda?
+ 
+                        <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalHelp" onclick="modalHelp1();">
+                            ¿Necesitas Ayuda?
                         </button>
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                <p>Some text in the modal.</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
+
 
                         <div class="dropdown-divider"></div>
                     <form id="logout" method="POST" action="<?php echo base_url; ?>Users/logout">
@@ -148,5 +132,26 @@ include_once 'Models/RegistersClinicalModel.php';
         
 
     </body>
+
+       <!-- Modal -->
+       <div class="modal fade" id="modalHelp" tabindex="-1" aria-labelledby="newModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="newModalLabel">Información de ayuda y soporte</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h1>Hola a todos</h1>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="#modalHelp" onclick="modalClose();">Close</button>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+      
+
+
+
 </html>
 
