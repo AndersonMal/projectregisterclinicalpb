@@ -18,7 +18,7 @@ class UserModel extends Query{
 
     public function getRegisters($identificacion){
         $strid = strval($identificacion);
-        $sql = "SELECT R.Nombre, U.Descrip, C.FechaHora 
+        $sql = "SELECT R.Nombre, U.Descrip, C.FechaHora, RH.RegistroXML
         FROM Pacientes P
         INNER JOIN Casos C ON P.Id = C.Paciente
         INNER JOIN RegistrosHistoria RH ON C.Caso = RH.Caso

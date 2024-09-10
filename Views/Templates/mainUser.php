@@ -1,7 +1,3 @@
-<?php 
-include_once 'Models/RegistersClinicalModel.php';
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +10,6 @@ include_once 'Models/RegistersClinicalModel.php';
         <title>Registro clínico</title>
 
         <link href="<?php echo base_url; ?>Assets/css/styles.css" rel="stylesheet" />
-        <link href="<?php echo base_url; ?>Assets/css/bootstrap.min.css" rel="stylesheet" />
         <script src="<?php echo base_url; ?>/Assets/js/all.min.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed sb-sidenav-toggled">
@@ -28,18 +23,15 @@ include_once 'Models/RegistersClinicalModel.php';
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <!-- Button trigger modal -->
- 
+                        
+                    <!-- Button trigger modal -->
                         <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalHelp" onclick="modalHelp1();">
                             ¿Necesitas Ayuda?
                         </button>
-
-
-
                         <div class="dropdown-divider"></div>
-                    <form id="logout" method="POST" action="<?php echo base_url; ?>Users/logout">
-                        <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                    </form>
+                        <form id="logout" method="POST" action="<?php echo base_url; ?>Users/logout">
+                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                        </form>
                     </div>
                 </li>
             </ul>
@@ -50,19 +42,15 @@ include_once 'Models/RegistersClinicalModel.php';
                 <main>
                     <div class="container-fluid">
                         <h1 class="mt-4">Historial Clínico</h1>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Escriba el nombre del registro que desea buscar, puede buscar ya sea por el nombre del registro, por el tipo del registro o por la fecha</li>
+                        <br>
+                        <ol class="breadcrumb mb-4" style="margin: 0 auto; width: 80%;">
+                            <li class="breadcrumb-item active">Aquí se muestran los registros clínicos asociados a la ultima adminisión, si desea buscar un registro clínico en específico por favor escriba el nombre del registro que desea buscar, puede buscar ya sea por el nombre del registro, por el tipo del registro asociado o por la fecha.</li>
                         </ol>
                         
                         <div class="container mt-5">       
                             <div class="rowSearch">
                                 <form class="d-flex">
-                                    <input type="date" class="form-control light-table-filter" id="dateinit" name="dateinit"  style="width: 16%">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;
-                                    <input type="date" class="form-control light-table-filter" id="datefinal" name="datefinal"  style="width: 16%">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;
                                     <input type="text" class="form-control light-table-filter" data-table="table" id="search_table" placeholder="Buscar registros clinicos"  style="width: 50%">
-                                    
                                 </form>
 
                             </div>
@@ -84,7 +72,11 @@ include_once 'Models/RegistersClinicalModel.php';
                                             <td><?php print_r($row->Nombre); ?></td> 
                                             <td><?php print_r($row->Descrip); ?></td> 
                                             <td><?php print_r($row->FechaHora); ?></td> 
-                                            <td class="text-center"><button class="btn btn-primary">Ver</button></td>
+                                            <td class="text-center">
+                                                <form id="generatedPDF" method="POST" action="<?php echo base_url; ?>Users/generatedPDF" target="_blanck">
+                                                    <button class="btn btn-primary">Ver</button>
+                                                </form>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else : ?>

@@ -126,7 +126,9 @@ function frmRegister(e) {
         }
 
         function _filter(row) {
-            var text = row.textContent.toLowerCase(), val = _input.value.toLowerCase();
+            var text = row.textContent.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+            val = _input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+         
             row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
         }
 
