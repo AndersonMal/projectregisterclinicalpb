@@ -185,6 +185,11 @@ class Users extends Controller{
                 $pdf->Cell(80, 1, utf8_decode($patient['Etnia']));
 
                 $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(8, 1, utf8_decode("Religion:"), 0);
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(57, 1, utf8_decode($patient['Religion']));
+
+                $pdf->SetFont('Arial', 'B', 8);
                 $pdf->Cell(30, 1, utf8_decode("Creencia:"), 0);
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(50, 1, utf8_decode($patient['Creencia']));
@@ -325,6 +330,107 @@ class Users extends Controller{
                 $pdf->SetFont('Courier','B',10);
                 $pdf->Cell(70);
                 $pdf->Cell(120,1 , utf8_decode(strtoupper($patient['NombreRegistro'])), 0);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 107;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
+
+                $x = 10;  // Coordenada X del cuadro
+                $y = 101;  // Coordenada Y del cuadro
+                $width = 190;  // Ancho del cuadro
+                $height = 5;  // Altura del cuadro
+
+                // Dibujar el cuadro
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetXY(10, 103);
+
 
                 
 
