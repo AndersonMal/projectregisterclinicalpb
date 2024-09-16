@@ -35,8 +35,8 @@ class UserModel extends Query{
     public function getDataPatients($identificacion){
         $strid = strval($identificacion);
         $sql = "SELECT P.Identificacion, P.TipoID, P.Nombre AS NombrePaciente, FORMAT(CAST(P.FechaNac AS DATE), 'dd/MM/yyyy') AS FechaNacimiento, RE.Nombre, P.Etnia, P.Regimen, P.DirAfil, P.TelRes, OC.Descrip AS Profesion,
-        P.GrupoPoblacional, P.Acompañante, P.TelAcomp, P.DirAcompañante, P.Responsable, P.TelResponsable, P.ParentescoAcompañante, P.DirResponsable, PR.Nombre AS NombreMedico,
-        AD.Nombre AS NombreEntidad, CONVERT(VARCHAR(16), RH.FechaAsignacionRegistro, 120) AS FechaRegistro , RH.Caso, P.Creencia, RE.Nombre AS Religion, P.Nivel,
+        P.GrupoPoblacional, P.Acompañante, P.TelAcomp, P.DirAcompañante, P.Responsable, P.TelResponsable, P.ParentescoAcompañante, P.DirResponsable, PR.Nombre AS NombreMedico, PR.Registro AS RegistroMedico,
+		PR.TipoDoc AS TiDocMedico, PR.Documento AS DocMedico, AD.Nombre AS NombreEntidad, CONVERT(VARCHAR(16), RH.FechaAsignacionRegistro, 120) AS FechaRegistro , RH.Caso, P.Creencia, RE.Nombre AS Religion, P.Nivel,
         P.Raza, P.ParentescoAcompañante, P.ParentescoResponsable, ES.Descrip, P.Sexo, P.EstadoCivil, P.Creencia, P.Carnet, DATEDIFF(YEAR, FechaNac, GETDATE()) 
         - CASE 
             WHEN (MONTH(FechaNac) > MONTH(GETDATE())) 
