@@ -73,7 +73,7 @@
                                             <td><?php print_r($row->Descrip); ?></td> 
                                             <td><?php print_r($row->FechaHora); ?></td> 
                                             <td class="text-center">
-                                                <form id="generatedPDF" method="POST" action="<?php echo base_url; ?>Users/generatedPDF" target="_blanck">
+                                                <form id="generatedPDF" method="POST" action="<?php echo base_url; ?>Users/createPDF" target="_blanck">
                                                     <button class="btn btn-primary">Ver</button>
                                                 </form>
                                             </td>

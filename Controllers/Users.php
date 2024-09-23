@@ -106,8 +106,6 @@ class Users extends Controller{
         unlink('temp_image.jpg');
     
     }
-    
-    
 
     public function createPDF(){
             require('Libraries/FPDF/fpdf.php');
@@ -149,11 +147,7 @@ class Users extends Controller{
         
             if (!empty($decodedData)) {
                 // Solo seleccionamos el primer registro, ya que puede haber varios duplicados
-                $patient = $decodedData[2];
-
-        
-            
-                // Agregar fecha de impresión y otros datos generales
+                $patient = $decodedData[2];   
                 // Definir las coordenadas y el tamaño del cuadro
                 $x = 10;  // Coordenada X del cuadro
                 $y = 27;  // Coordenada Y del cuadro
@@ -183,7 +177,6 @@ class Users extends Controller{
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(60, 1, utf8_decode($patient['Caso']));
                 $pdf->Ln(4);
-
 
                 // Datos del paciente
                 $pdf->SetFont('Arial', 'B', 8);
@@ -329,9 +322,7 @@ class Users extends Controller{
                 $pdf->Cell(60, 1, utf8_decode($patient['DirResponsable']));
                 $pdf->Ln(4);
 
-
                 // Información adicional
-
                 $pdf->SetFont('Arial', 'B', 8);
                 $pdf->Cell(23, 1, utf8_decode("Médico Tratante:"), 0);
                 $pdf->SetFont('Arial', '', 8);
@@ -346,18 +337,20 @@ class Users extends Controller{
                 $pdf->SetFont('Arial', 'B', 8); 
                 $pdf->Cell(23, 1, utf8_decode("Administradora:"), 0);
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->Cell(65, 1, utf8_decode($patient['NombreEntidad']));
-                
+                $pdf->Cell(65, 1, utf8_decode($patient['NombreEntidad']));    
 
                 $pdf->SetFont('Arial', 'B', 8);
                 $pdf->Cell(10, 1, utf8_decode("Tipo Vinculación:"), 0);
 
+                $pdf->Ln(1);
+
+                /*
+                if($patient['NombreRegistro'] == 'Evolución de Urgencia'){                   
                    $this->evolucionUrgencia($pdf, $patient);
-              
-
+                }else */ if($patient['NombreRegistro'] == 'Registro Clínico de Urgencia'){                   
+                    $this->RegistroUrgencia($pdf, $patient);
+                 }
             }
-
-
 
             $pdf->Output();
         
@@ -371,22 +364,14 @@ class Users extends Controller{
         $height = 5;  // Altura del cuadro
 
         $pdf->Rect($x, $y, $width, $height);
-
         $pdf->SetFont('Courier', 'B', 10);
-
         $texto = utf8_decode(strtoupper($patient['NombreRegistro']));
-
         $anchoTexto = $pdf->GetStringWidth($texto);
-
         $xCentrada = $x + ($width - $anchoTexto) / 2;
-
         $pdf->SetXY($xCentrada, $y );
-
         $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
-
        
         $pdf->Line(20, 110, 190, 110); // x1, y1, x2, y2
-
         $pdf->SetXY(25, 108);
 
         try {
@@ -516,7 +501,7 @@ class Users extends Controller{
             $pdf->SetXY($x_position_doc, $currentY + 15); 
             $pdf->Cell($text_width_doc, 1, utf8_decode($docMedico), 0);
 
-
+            
         } catch (Exception $e) {
             // Mostrar el error si el XML es inválido
             echo "Error al procesar el XML: " . $e->getMessage();
@@ -541,37 +526,13 @@ class Users extends Controller{
         $pdf->SetXY($xCentrada, $y );
         $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
 
-    
-        // Crear un rectángulo punteado
-        function DottedRect($pdf, $x, $y, $w, $h, $dot_length = 1, $space_length = 1) {
-            // Línea superior
-                for ($i = $x; $i < $x + $w; $i += ($dot_length + $space_length)) {
-                    $pdf->Line($i, $y, $i + $dot_length, $y);
-                }
-                
-                // Línea inferior
-                for ($i = $x; $i < $x + $w; $i += ($dot_length + $space_length)) {
-                    $pdf->Line($i, $y + $h, $i + $dot_length, $y + $h);
-                }
-    
-                // Línea izquierda
-                for ($i = $y; $i < $y + $h; $i += ($dot_length + $space_length)) {
-                    $pdf->Line($x, $i, $x, $i + $dot_length);
-                }
-    
-                // Línea derecha
-                for ($i = $y; $i < $y + $h; $i += ($dot_length + $space_length)) {
-                    $pdf->Line($x + $w, $i, $x + $w, $i + $dot_length);
-                }
-            }
-    
         // Parámetros para el rectángulo punteado
         $x = 10;
         $y = 107; 
         $width = 190;
         $height = 5;
 
-        DottedRect($pdf, $x, $y, $width, $height);
+        $this->dottedRect($pdf, $x, $y, $width, $height);
 
         $pdf->SetFont('Courier', 'B', 10); 
         $text = "DESCRIPCIÓN DE LA NOTA";
@@ -582,48 +543,125 @@ class Users extends Controller{
         $pdf->SetXY($text_x, $text_y);
         $pdf->Cell($text_width, 1, utf8_decode($text), 0, 1, 'C');
 
-
         try {
             $xml = new SimpleXMLElement($patient['RegistroXML']);
             $maxY = 270;  // Ajustar según el tamaño de la página
+            $counter = 0; // Contador de columnas por fila
+            $diagnosticoPrincipal = ''; // Variable para almacenar el valor del diagnóstico principal temporalmente
+            $observacion = ''; // Variable para almacenar la observación temporalmente
+
             foreach ($xml as $item) {
                 if ((string) $item['NombreCampo'] === 'DescripcionNota') {
-    
-                    // Verifica si hay suficiente espacio antes de agregar contenido
-                    $currentY = $pdf->GetY();
-                    $required_space = 30; // Estimar cuánto espacio necesita la nota
-                   
-    
-                    if ($currentY + $required_space > $maxY) {
-                        $pdf->AddPage();
-                    }
-    
-                    $pdf->SetXY(25, $pdf->GetY()); // Ajustar la coordenada Y si es necesario
-                    $pdf->Ln(5);
-                    $pdf->SetFont('Arial', '', 8);
-    
-                    $valorCampo = $item['ValorCampo'];
-                    $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
-                    $valorCampoDecodificado = str_replace(
-                        ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
-                        PHP_EOL,  
-                        $valorCampoDecodificado
-                    );
-    
-                    $textoPlano = strip_tags($valorCampoDecodificado);
-                    $pdf->MultiCell(160, 5, utf8_decode($textoPlano), 0);
-    
-                    // Verificar espacio después de agregar el texto
-                    $currentY = $pdf->GetY();
-                    if ($currentY + $required_space > $maxY) {
-                        $pdf->AddPage();
-                        $pdf->SetY(10); // Reiniciar Y tras añadir la nueva página
+                    $valorCampo = (string) $item['ValorCampo'];
+                    if ($valorCampo != '') {
+                        // Mostrar 'DescripcionNota'
+                        $pdf->SetXY(25, $pdf->GetY());
+                        $pdf->Ln(5);
+                        $pdf->SetFont('Arial', '', 8);
+                        $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                        $valorCampoDecodificado = str_replace(
+                            ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                            PHP_EOL,
+                            $valorCampoDecodificado
+                        );
+                        $textoPlano = strip_tags($valorCampoDecodificado);
+                        $pdf->MultiCell(160, 5, utf8_decode($textoPlano), 0);
+                        $counter = 0; // Reiniciar contador de columnas para empezar una nueva fila
+                        $pdf->Ln(6);
                     }
                 }
+
+                // Lista de campos a mostrar en pares, excepto DiagnosticoPrincipal
+                $campos = [
+                    'FechaIngreso' => 'Fecha y Hora de Ingreso:',
+                    'Autorizacion' => 'Autorización:',
+                    'FechaEgreso' => 'Fecha y Hora de Egreso:',
+                    'CausaExterna' => 'Causa Externa:',
+                    'EstadoSalida' => 'Estado de Salida:',
+                    'DestinoPaciente' => 'Destino del Usuario a la Salida:',
+                ];
+
+                foreach ($campos as $campo => $titulo) {
+                    if ((string) $item['NombreCampo'] === $campo && $item['ValorCampo'] != '') {
+                        // Verificar si es la segunda columna, forzar salto de línea si es necesario
+                        if ($counter > 0 && $counter % 2 == 0) {
+                            $pdf->Ln();
+                            $counter = 0; // Reiniciar el contador de columnas
+                        }
+
+                        // Mostrar el título y el valor
+                        $pdf->SetFont('Arial', 'B', 8);
+                        $pdf->Cell(45, 5, utf8_decode($titulo));
+                        $pdf->SetFont('Arial', '', 8);
+
+                        $valorCampo = $item['ValorCampo'];
+                        $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                        $valorCampoDecodificado = str_replace(
+                            ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                            PHP_EOL,
+                            $valorCampoDecodificado
+                        );
+                        $textoPlano = strip_tags($valorCampoDecodificado);
+                        $pdf->Cell(45, 5, utf8_decode($textoPlano));
+
+                        $counter++; // Incrementar el contador de columnas
+                    }
+                }
+
+                // Guardar Diagnóstico Principal para mostrarlo al final en su propia línea
+                if ((string) $item['NombreCampo'] === 'DiagnosticoPrincipal' && (string) $item['ValorCampo'] != '') {
+                    $diagnosticoPrincipal = (string) $item['ValorCampo'];
+                }
+
+                // Guardar Observación para mostrarla después del Diagnóstico Principal
+                if ((string) $item['NombreCampo'] == 'ObservacionP') {
+                    $valorCampo = (string) $item['ValorCampo'];
+                    if($valorCampo != ''){
+                        $observacion = (string) $item['ValorCampo'];
+                    }
+                    
+                }
             }
-    
-            // Dibujar las líneas y la información del médico
-            $this->dibujarInformacionMedico($pdf, $patient, $maxY);
+
+            // Mostrar Diagnóstico Principal al final
+            if ($diagnosticoPrincipal != '') {
+                $pdf->Ln(); // Salto de línea antes del Diagnóstico Principal
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(45, 5, utf8_decode('Diagnóstico Principal:'));
+                $pdf->SetFont('Arial', '', 8);
+
+                // Decodificar y limpiar el valor del Diagnóstico Principal
+                $diagnosticoPrincipalDecodificado = html_entity_decode($diagnosticoPrincipal, ENT_QUOTES, 'UTF-8');
+                $diagnosticoPrincipalDecodificado = str_replace(
+                    ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                    PHP_EOL,
+                    $diagnosticoPrincipalDecodificado
+                );
+                $textoPlanoDiagnostico = strip_tags($diagnosticoPrincipalDecodificado);
+                $pdf->Cell(35, 5, utf8_decode($textoPlanoDiagnostico));
+                $pdf->Ln(); // Salto de línea después del Diagnóstico Principal
+            }
+
+            // Mostrar Observación después del Diagnóstico Principal
+            if ($observacion != '') {
+                $pdf->Ln(3); // Agregar unos saltos de línea
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(45, 5, utf8_decode('Observación:'));
+                $pdf->SetFont('Arial', '', 8);
+                // Decodificar y limpiar el valor de la Observación
+                $observacionDecodificada = html_entity_decode($observacion, ENT_QUOTES, 'UTF-8');
+                $observacionDecodificada = str_replace(
+                    ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                    PHP_EOL,
+                    $observacionDecodificada
+                );
+                $textoPlanoObservacion = strip_tags($observacionDecodificada);
+                $pdf->Ln();
+                $pdf->MultiCell(160, 5, utf8_decode($textoPlanoObservacion), 0);
+            }
+
+        // Dibujar las líneas y la información del médico
+        $this->drawInformationDoctor($pdf, $patient, $maxY);
     
         } catch (Exception $e) {
             echo "Error al procesar el XML: " . $e->getMessage();
@@ -631,71 +669,186 @@ class Users extends Controller{
 
     }
 
+    
+    public function RegistroUrgencia($pdf, $patient){
+        
+        $x = 10;  
+        $y = 101;  
+        $width = 190;  
+        $height = 5; 
 
-    public function dibujarInformacionMedico($pdf, $patient, $maxY) {
-        $pdf->Ln(15);  // Salto de línea previo al bloque
+        $pdf->Rect($x, $y, $width, $height);
+        $pdf->SetFont('Courier', 'B', 10);
+
+        $texto = utf8_decode(strtoupper($patient['NombreRegistro']));
+        $anchoTexto = $pdf->GetStringWidth($texto);
+        $xCentrada = $x + ($width - $anchoTexto) / 2;
+
+        $pdf->SetXY($xCentrada, $y );
+        $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+
+        // Parámetros para el rectángulo punteado
+        $x = 10;
+        $y = 107; 
+        $width = 190;
+        $height = 5;
+
+        $this->dottedRect($pdf, $x, $y, $width, $height);
+
+        $pdf->SetFont('Courier', 'B', 10); 
+        $text = "DATOS DE LA CONSULTA";
+        $text_width = $pdf->GetStringWidth($text);
+        $text_x = $x + ($width - $text_width) / 2;
+        $text_y = $y + ($height / 2) - 0.5; 
+
+        $pdf->SetXY($text_x, $text_y);
+        $pdf->Cell($text_width, 1, utf8_decode($text), 0, 1, 'C');
+        
+        $pdf->Ln(2);
+
+        try {
+            $xml = new SimpleXMLElement($patient['RegistroXML']);
+            $maxY = 270;
+            $planAdministradora = '';
+            $counter = 0;
+            foreach ($xml as $item) {
+                
+                $campos = [
+                    'ORemitido' => 'Remitido:',
+                    'Contrareferencia' => 'Contra referencia:',
+                    'GlasW' => 'Glasgow:',
+                    'Valoracion' => 'Valoracion:',
+                    'Prioridad' => 'Triage:',
+                    'TipoConsulta' => 'Tipo de consulta:',
+                ];
+            
+                foreach ($campos as $campo => $titulo) {
+                    if ((string) $item['NombreCampo'] === $campo) {
+                        $valorCampo = $item['ValorCampo'];
+            
+                        if ($item['NombreCampo'] == 'ORemitido' && $item['NombreTabla'] == 'CamposBoolean') {
+                            $valorCampo = ($valorCampo == 0) ? 'No' : 'Si';
+                        } elseif ($item['NombreCampo'] == 'ORemitido' && $item['NombreTabla'] == 'CamposTexto' && $valorCampo == 0) {
+                            $valorCampo = '';
+                        }
+            
+                        if ($item['NombreCampo'] == 'Contrareferencia' && $item['ValorCampo'] == "false") {
+                            $valorCampo = 'No';
+                        }
+
+                        $pdf->SetFont('Arial', 'B', 8);
+                        $pdf->Cell(45, 3, utf8_decode($titulo));
+                        $pdf->SetFont('Arial', '', 8);
+                        $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                        $valorCampoDecodificado = str_replace(
+                            ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                            PHP_EOL,
+                            $valorCampoDecodificado
+                        );
+                        $textoPlano = strip_tags($valorCampoDecodificado);
+                        $pdf->Cell(45, 3, utf8_decode($textoPlano));
+                        $counter++;
+            
+                        if ($counter % 2 == 0) {
+                            $pdf->Ln();
+                        }
+                    }
+                }
+            
+                if ((string) $item['NombreCampo'] === 'PlanAdministradora') {
+                    $planAdministradora = (string) $item['ValorCampo'];
+                }
+            }
+            
+            if ($planAdministradora != '') {
+                $pdf->Ln(1);
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(45, 3, utf8_decode('Plan / Administradora:'));
+                $pdf->SetFont('Arial', '', 8);
+
+                $diagnosticoPrincipalDecodificado = html_entity_decode($planAdministradora, ENT_QUOTES, 'UTF-8');
+                $diagnosticoPrincipalDecodificado = str_replace(
+                    ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                    PHP_EOL,
+                    $diagnosticoPrincipalDecodificado
+                );
+                $textoPlanoDiagnostico = strip_tags($diagnosticoPrincipalDecodificado);
+                $pdf->Cell(35, 3, utf8_decode($textoPlanoDiagnostico));
+                $pdf->Ln();
+            }
+
+        $this->drawInformationDoctor($pdf, $patient, $maxY);
+    
+        } catch (Exception $e) {
+            echo "Error al procesar el XML: " . $e->getMessage();
+        }
+    
+    }
+
+    public function drawInformationDoctor($pdf, $patient, $maxY) {
+        $pdf->Ln(15);
         $x_start = 150;
         $x_end = 190;
         $width = $x_end - $x_start;
         $currentY = $pdf->GetY();
-        $required_space = 30; 
-    
+        $required_space = 30;
+
         if ($currentY + $required_space > $maxY) {
-            $pdf->AddPage();  
-            $pdf->SetY(10);
-            $currentY = $pdf->GetY();
+            $pdf->AddPage();
+            $pdf->SetY(10); 
         }
-        
+
+        $currentY = $pdf->GetY();
         $pdf->Line(145, $currentY, 195, $currentY);
         $pdf->SetY($currentY + 2);
-    
         $pdf->SetFont('Times', 'B', 7);
+
+        // Alinear horizontalmente los textos (centrados entre $x_start y $x_end)
         $pdf->SetX($x_start);
-    
+
+        // Nombre del médico
         $nombreMedico = strtoupper($patient['NombreMedico']);
-        $pdf->Cell($width, 5, utf8_decode($nombreMedico), 0, 1, 'C');
-    
+        $pdf->Cell($width, 5, utf8_decode($nombreMedico), 0, 1, 'C');  // Centrado con ancho controlado
+
+        // Descripción
         $descripcion = strtoupper($patient['Descrip']);
         $pdf->SetX($x_start);
         $pdf->Cell($width, 5, utf8_decode($descripcion), 0, 1, 'C');
-    
+
+        // Registro médico
         $registroMedico = strtoupper($patient['RegistroMedico']);
         $pdf->SetX($x_start);
         $pdf->Cell($width, 5, utf8_decode($registroMedico), 0, 1, 'C');
-    
+
         $tiDocMedico = (string) $patient['TiDocMedico'];
         $docMedico = (string) $patient['DocMedico'];
         $pdf->SetX($x_start);
         $pdf->Cell($width, 5, utf8_decode("$tiDocMedico $docMedico"), 0, 1, 'C');
     }
-    
-    
-    public function RegistroUrgencia($pdf, $patient){
+
+    public function dottedRect($pdf, $x, $y, $w, $h){
+        $dot_length = 1; $space_length = 1;
+        // Línea superior
+        for ($i = $x; $i < $x + $w; $i += ($dot_length + $space_length)) {
+            $pdf->Line($i, $y, $i + $dot_length, $y);
+        }
         
-        $x = 10;  // Coordenada X del cuadro
-        $y = 101;  // Coordenada Y del cuadro
-        $width = 190;  // Ancho del cuadro
-        $height = 5;  // Altura del cuadro
+        // Línea inferior
+        for ($i = $x; $i < $x + $w; $i += ($dot_length + $space_length)) {
+            $pdf->Line($i, $y + $h, $i + $dot_length, $y + $h);
+        }
 
-        $pdf->Rect($x, $y, $width, $height);
+        // Línea izquierda
+        for ($i = $y; $i < $y + $h; $i += ($dot_length + $space_length)) {
+            $pdf->Line($x, $i, $x, $i + $dot_length);
+        }
 
-        $pdf->SetFont('Courier', 'B', 10);
-
-        $texto = utf8_decode(strtoupper($patient['NombreRegistro']));
-
-        $anchoTexto = $pdf->GetStringWidth($texto);
-
-        $xCentrada = $x + ($width - $anchoTexto) / 2;
-
-        $pdf->SetXY($xCentrada, $y );
-
-        $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
-
-    
+        // Línea derecha
+        for ($i = $y; $i < $y + $h; $i += ($dot_length + $space_length)) {
+            $pdf->Line($x + $w, $i, $x + $w, $i + $dot_length);
+        }
     }
         
- 
-
 }
 
 ?>
