@@ -13,8 +13,8 @@
         <script src="<?php echo base_url; ?>/Assets/js/all.min.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed sb-sidenav-toggled">
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <img src="<?php echo base_url; ?>/Assets/css/v9_58.png" id="imglogo">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-light " style="width: 100%; height:70px; padding: 0px; ">
+            <img src="<?php echo base_url; ?>Assets/css/v9_58.png" id="imglogo" >
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
             </form>

@@ -73,36 +73,28 @@ class Users extends Controller{
         $dataArray = json_decode($dataPDF);
     
         if (empty($data)) {
-            // Manejar error de recuperación de datos
             return "Error al recuperar los datos.";
         }
-
-        // 2. Obtener el dato binario (firma) y guardarlo en un archivo temporal
         $firma = isset($data[0]['Firma']) ? $data[0]['Firma'] : null;
 
         if ($firma) {
             file_put_contents('temp_image.jpg', $firma);
         } else {
-            // Manejar caso donde no hay firma
             return "No se encontró una firma.";
         }
 
-        // 3. Crear el PDF
         $pdf = new FPDF();
         $pdf->AddPage();
         $pdf->SetFont('Arial', 'B', 16);
 
-        // Añadir la imagen al PDF
         if (file_exists('temp_image.jpg')) {
-            $pdf->Image('temp_image.jpg', 10, 10, 50, 50); // Ajusta la posición y tamaño según sea necesario
+            $pdf->Image('temp_image.jpg', 10, 10, 50, 50);
         } else {
-            // Manejar caso donde la imagen no se ha guardado
             $pdf->Cell(0, 10, 'Imagen no disponible');
         }
 
         $pdf->Output();
 
-        // 4. Eliminar el archivo temporal
         unlink('temp_image.jpg');
     
     }
@@ -277,18 +269,18 @@ class Users extends Controller{
                 $pdf->Ln(4);
 
                 $pdf->SetFont('Arial', 'B', 8);
-                $pdf->Cell(10, 1, utf8_decode("Acompañante:"), 0);
+                $pdf->Cell(20, 1, utf8_decode("Acompañante:"), 0);
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(60, 1, utf8_decode($patient['Acompañante']));
                 $pdf->Ln(4);
 
                 $pdf->SetFont('Arial', 'B', 8);
-                $pdf->Cell(10, 1, utf8_decode("Teléfono Acomp.:"), 0);
+                $pdf->Cell(25, 1, utf8_decode("Teléfono Acomp.:"), 0);
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->Cell(78, 1, utf8_decode($patient['TelAcomp']));
+                $pdf->Cell(63, 1, utf8_decode($patient['TelAcomp']));
 
                 $pdf->SetFont('Arial', 'B', 8);
-                $pdf->Cell(10, 1, utf8_decode("Parentezco Acomp.:"), 0);
+                $pdf->Cell(30, 1, utf8_decode("Parentezco Acomp.:"), 0);
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(60, 1, utf8_decode($patient['ParentescoAcompañante']));
                 $pdf->Ln(4);
@@ -341,6 +333,8 @@ class Users extends Controller{
 
                 $pdf->SetFont('Arial', 'B', 8);
                 $pdf->Cell(10, 1, utf8_decode("Tipo Vinculación:"), 0);
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(65, 1, utf8_decode($patient['NombreEntidad']));   
 
                 $pdf->Ln(1);
 
@@ -668,7 +662,6 @@ class Users extends Controller{
         }
 
     }
-
     
     public function RegistroUrgencia($pdf, $patient){
         
@@ -691,11 +684,11 @@ class Users extends Controller{
         $x = 10;
         $y = 107; 
         $width = 190;
-        $height = 5;
+        $height = 4;
 
         $this->dottedRect($pdf, $x, $y, $width, $height);
 
-        $pdf->SetFont('Courier', 'B', 10); 
+        $pdf->SetFont('Courier', 'B', 9); 
         $text = "DATOS DE LA CONSULTA";
         $text_width = $pdf->GetStringWidth($text);
         $text_x = $x + ($width - $text_width) / 2;
@@ -708,8 +701,9 @@ class Users extends Controller{
 
         try {
             $xml = new SimpleXMLElement($patient['RegistroXML']);
-            $maxY = 270;
+            $maxY = 310;
             $planAdministradora = '';
+            $tipoConsulta = '';
             $counter = 0;
             foreach ($xml as $item) {
                 
@@ -719,11 +713,10 @@ class Users extends Controller{
                     'GlasW' => 'Glasgow:',
                     'Valoracion' => 'Valoracion:',
                     'Prioridad' => 'Triage:',
-                    'TipoConsulta' => 'Tipo de consulta:',
                 ];
             
                 foreach ($campos as $campo => $titulo) {
-                    if ((string) $item['NombreCampo'] === $campo) {
+                    if ((string) $item['NombreCampo'] == $campo) {
                         $valorCampo = $item['ValorCampo'];
             
                         if ($item['NombreCampo'] == 'ORemitido' && $item['NombreTabla'] == 'CamposBoolean') {
@@ -754,12 +747,42 @@ class Users extends Controller{
                         }
                     }
                 }
+
+                if ((string) $item['NombreCampo'] === 'TipoConsulta') {
+                    $tipoConsulta = (string) $item['ValorCampo'];
+
+                    $partes = explode('|', $tipoConsulta);
+                    if (isset($partes[1])) {
+                        $tipoConsulta = $partes[1]; // Esto obtiene la parte que está después de "|"
+                    }
+                }
             
                 if ((string) $item['NombreCampo'] === 'PlanAdministradora') {
                     $planAdministradora = (string) $item['ValorCampo'];
+                    $partes = explode('|', $planAdministradora);
+                    if (isset($partes[1])) {
+                        $planAdministradora = $partes[1]; // Esto obtiene la parte que está después de "|"
+                    }
                 }
             }
             
+            if ($tipoConsulta != '') {
+                $pdf->Ln(3);
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(45, 3, utf8_decode('Tipo de consulta:'));
+                $pdf->SetFont('Arial', '', 8);
+
+                $diagnosticoPrincipalDecodificado = html_entity_decode($tipoConsulta, ENT_QUOTES, 'UTF-8');
+                $diagnosticoPrincipalDecodificado = str_replace(
+                    ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                    PHP_EOL,
+                    $diagnosticoPrincipalDecodificado
+                );
+                $textoPlanoDiagnostico = strip_tags($diagnosticoPrincipalDecodificado);
+                $pdf->Cell(35, 3, utf8_decode($textoPlanoDiagnostico));
+                $pdf->Ln();
+            }
+
             if ($planAdministradora != '') {
                 $pdf->Ln(1);
                 $pdf->SetFont('Arial', 'B', 8);
@@ -776,13 +799,539 @@ class Users extends Controller{
                 $pdf->Cell(35, 3, utf8_decode($textoPlanoDiagnostico));
                 $pdf->Ln();
             }
+            
+            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $x = 10;
+            $y = $ultimaPosicionY + 2;
+            $width = 190;
+            $height = 4;
 
-        $this->drawInformationDoctor($pdf, $patient, $maxY);
+            $this->dottedRect($pdf, $x, $y, $width, $height);
+
+            $pdf->SetFont('Courier', 'B', 9); 
+            $text = "MOTIVO DE LA CONSULTA";
+            $text_width = $pdf->GetStringWidth($text);
+            $text_x = $x + ($width - $text_width) / 2;
+            $text_y = $y + ($height / 2) - 0.5; 
+
+            $pdf->SetXY($text_x, $text_y);
+            $pdf->Cell($text_width, 1, utf8_decode($text), 0, 1, 'C');
+            
+            $pdf->Ln(3);
+
+            foreach ($xml as $item) {
+                if ((string)$item['NombreCampo'] === 'MotivoConsulta') {
+                    $valorCampo = (string)$item['ValorCampo'];  
+                    $pdf->SetFont('Arial', '', 8);
+                    $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                    $valorCampoDecodificado = str_replace(
+                        ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                        PHP_EOL,
+                        $valorCampoDecodificado
+                    );
+                    $textoPlano = strip_tags($valorCampoDecodificado);
+                    $pdf->MultiCell(0, 2, utf8_decode($textoPlano)); // Usa MultiCell para manejar texto largo
+                }
+            }
+
+            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $x = 10;
+            $y = $ultimaPosicionY + 1;
+            $width = 190;
+            $height = 4;
+
+            $this->dottedRect($pdf, $x, $y, $width, $height);
+
+            $pdf->SetFont('Courier', 'B', 9); 
+            $text = "ENFERMEDAD ACTUAL";
+            $text_width = $pdf->GetStringWidth($text);
+            $text_x = $x + ($width - $text_width) / 2;
+            $text_y = $y + ($height / 2) - 0.5; 
+
+            $pdf->SetXY($text_x, $text_y);
+            $pdf->Cell($text_width, 1, utf8_decode($text), 0, 1, 'C');
+            
+            $pdf->Ln(3);
+
+            foreach ($xml as $item) {
+                if ((string)$item['NombreCampo'] === 'EnfermedadActual') {
+                    $valorCampo = (string)$item['ValorCampo'];  
+                    $pdf->SetFont('Arial', '', 8);
+                    $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                    $valorCampoDecodificado = str_replace(
+                        ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                        PHP_EOL,
+                        $valorCampoDecodificado
+                    );
+                    $textoPlano = strip_tags($valorCampoDecodificado);
+                    $pdf->MultiCell(0, 3, utf8_decode($textoPlano)); // Usa MultiCell para manejar texto largo
+                }
+            }
+
+            $pdf->SetFont('Arial', 'B', 8);
+            $pdf->Cell(45, 3.5, utf8_decode('Sistema respiratorio:'), 0, 1);
+
+            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $x = 10;
+            $y = $ultimaPosicionY + 0.5;
+            $width = 190;  
+            $height = 5; 
+    
+            $pdf->Rect($x, $y, $width, $height);
+            $pdf->SetFont('Courier', 'B', 10);
+    
+            $texto = utf8_decode(strtoupper("ANTECEDENTES"));
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+    
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+
+            $pdf->Ln(5);
+
+            $xInicial = 10;
+            $yInicial = $pdf->GetY();
+            $anchoCampo = 40;
+            $anchoCuadro = 120;
+            $alturaCampo = 27;
+            $grosorLinea = -1;
+
+            foreach ($xml as $item) {
+                
+                $campos = [
+                    'aPatologicos' => '1.Patológicos (HTA, Diabetes):',
+                    'aQuirurgicos' => '2.Quirúrgicos:',
+                    'aHospitalarios' => '3.Hospitalarios:',
+                    'aTranfusionales' => '4.Tranfusionales:',
+                    'aToxico' => '5.Tóxico-Alérgicos:',
+                    'aFarmacologicos' => '6.Farmacológicos:',
+                    'aGinecoObstetrico' => '7.Gineco-Obstétrico:',
+                    'aTraumaticos' => '8.Traumáticos:',
+                    'aOtros' => '9.Otros:', 
+                    'aAlergiaMedicamento' => '10.Alergia-toxicidad a medicamentos:',
+                ];
+
+                $xPosicion = $xInicial; // Posición X de inicio
+                $yPosicion = $yInicial; // Posición Y de inicio
+            
+                foreach ($campos as $campo => $titulo) {
+                    if ((string) $item['NombreCampo'] === $campo) {
+                        $valorCampo = (string) $item['ValorCampo'];
+            
+                        // Mostrar el campo
+                        $pdf->SetFont('Arial', 'B', 8);
+                        $pdf->Cell(55, 3, utf8_decode($titulo));
+                        $pdf->Ln();
+
+                    }
+                }
+                  
+                         
+            }
+
+            // Dibujar un cuadro al lado del campo
+            $pdf->SetLineWidth($grosorLinea);
+            $xCuadro = $xPosicion + $anchoCampo + 30; // Posición X del cuadro
+            $pdf->Rect($xCuadro, $yPosicion, $anchoCuadro, $alturaCampo); // Dibujar cuadro
+            
+            // Aumentar la posición en Y para el siguiente campo
+            $yPosicion += $alturaCampo;
+
+            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $x = 10;
+            $y = $ultimaPosicionY + 0.5;
+            $width = 190;  
+            $height = 5; 
+    
+            $pdf->Rect($x, $y, $width, $height);
+            $pdf->SetFont('Courier', 'B', 10);
+    
+            $texto = utf8_decode(strtoupper("FAMILIARES"));
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+    
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+
+            $pdf->Ln(3);
+
+            if($patient['Sexo'] == 'F'){
+                $pdf->Ln(1);
+                $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+                $x = 10;
+                $y = $ultimaPosicionY + 0.5;
+                $width = 190;  
+                $height = 5; 
+        
+                $pdf->Rect($x, $y, $width, $height);
+                $pdf->SetFont('Courier', 'B', 10);
+        
+                $texto = utf8_decode(strtoupper("GINECOLÓGICOS"));
+                $anchoTexto = $pdf->GetStringWidth($texto);
+                $xCentrada = $x + ($width - $anchoTexto) / 2;
+
+                $pdf->SetXY($xCentrada, $y );
+                $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+
+                $pdf->Ln(1);
+
+                $cont = 0;
+                foreach ($xml as $item) {
+                
+                    $campos = [
+                        'Menarquia2' => 'Menarquia:',
+                        'FechaUltimaMestruacion' => 'Última Menstruación:',
+                        'UltimoParto2' => 'Ultimo Parto:',
+                        'Citologia2' => 'Citologia:',
+                        'Gestacion' => 'Gestacion:',
+                        'Parto' => 'Paridad:',
+                        'Aborto' => 'Aborto:',
+                        'Cesarea' => 'Cesárea:',
+                        'Vivos' => 'Vivos:', 
+                        'Embarazada' => 'Esta Embarazada:',
+                    ];
+    
+                    $xPosicion = $xInicial; // Posición X de inicio
+                    $yPosicion = $yInicial; // Posición Y de inicio
+                
+                    foreach ($campos as $campo => $titulo) {
+                        if ((string) $item['NombreCampo'] === $campo) {
+                            $valorCampo = $item['ValorCampo'];
+                            if($valorCampo == 'off'){
+                                $valorCampo = 'No';
+                            }else if($valorCampo == 'On'){
+                                $valorCampo == 'Si';
+                            }
+                            if($cont%2 == 0){
+                                $pdf->Ln();
+                            }
+                            $pdf->SetFont('Arial', 'B', 8);
+                            $pdf->Cell(45, 3, utf8_decode($titulo));
+                            $pdf->SetFont('Arial', '', 8);
+                            $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                            $valorCampoDecodificado = str_replace(
+                                ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                                PHP_EOL,
+                                $valorCampoDecodificado
+                            );
+                            $textoPlano = strip_tags($valorCampoDecodificado);
+                            $cont++;
+                            $pdf->Cell(45, 3, utf8_decode($textoPlano));
+                        }
+                    }        
+                }
+                $pdf->Ln(3);
+            }
+
+            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $x = 10;
+            $y = $ultimaPosicionY + 0.5;
+            $width = 190;  
+            $height = 5; 
+    
+            $pdf->Rect($x, $y, $width, $height);
+            $pdf->SetFont('Courier', 'B', 10);
+    
+            $texto = utf8_decode(strtoupper("VARIABLES 4505"));
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+            $pdf->Ln(4);
+            
+            $ultimaPosicionY = $pdf->GetY();
+            $y = $ultimaPosicionY + 0.5;
+            $pdf->SetFont('Arial', 'B', 8);
+            $texto = utf8_decode("Variables 4505");
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0);
+            
+            $pdf->Ln(3); 
+            $ultimaPosicionY = $pdf->GetY();
+            $y = $ultimaPosicionY + 0.5;
+            $pdf->SetFont('Arial', 'B', 8);
+            $texto = utf8_decode("Riesgos");
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0);
+            $pdf->Ln(4);
+            
+            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $x = 10;
+            $y = $ultimaPosicionY + 0.5;
+            $width = 190;  
+            $height = 5; 
+            $pdf->Rect($x, $y, $width, $height);
+            $pdf->SetFont('Courier', 'B', 10);
+            $texto = utf8_decode(strtoupper("REVISIÓN POR SISTEMAS"));
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+
+            $pdf->Ln(5);
+
+            $pdf->SetFont('Arial', 'B', 8);
+            $pdf->Cell(45, 3, utf8_decode('Sistema afectado:'));
+            foreach ($xml as $item) {
+                if ((string)$item['NombreCampo'] === 'SistemaAfectado') {
+                    $valorCampo = (string)$item['ValorCampo'];  
+                    $pdf->SetFont('Arial', 'B', 8);
+                    $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                    $valorCampoDecodificado = str_replace(
+                        ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                        PHP_EOL,
+                        $valorCampoDecodificado
+                    );
+                    $textoPlanoDiagnostico = strip_tags($valorCampoDecodificado);
+                    $pdf->Cell(35, 3, utf8_decode($textoPlanoDiagnostico)); 
+                }
+            }
+
+            $pdf->Ln(4);
+
+            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $x = 10;
+            $y = $ultimaPosicionY + 0.5;
+            $width = 190;  
+            $height = 5; 
+            $pdf->Rect($x, $y, $width, $height);
+            $pdf->SetFont('Courier', 'B', 10);
+            $texto = utf8_decode(strtoupper("EXAMENES FISICOS"));
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+
+            $pdf->Ln(3);
+
+            $cont = 0;
+            foreach ($xml as $item) {
+                $campos = [
+                    'FrecuenciaCardiaca' => ['F.Cardiaca:', 'xMin'],
+                    'Temperatura' => ['Temperatura:', '°C'],
+                    'FrecuenciaRespiratoria' => ['F.Respiratoria:', 'xMin'],
+                    'Peso' => ['Peso:', 'kg'],
+                    'Talla' => ['Talla:', 'm'],
+                    'PresionSistole' => ['Presión Sistólica:', 'mmHg'],
+                    'PresionDiastole' => ['Presión Diastólica:', 'mmHg'],
+                    'PresionArterialMedia' => ['Presión Arterial Media:', 'mmHg'],
+                    'IndiceMasaCorporal' => ['IMC:', 'Kg/m²'],
+                    'SuperficieMasaCorporal' => ['SMC:', 'm₂'],
+                ];
+
+                foreach ($campos as $campo => $tituloYUnidad) {
+                    if ((string) $item['NombreCampo'] === $campo) {
+                        $titulo = $tituloYUnidad[0]; 
+                        $unidad = $tituloYUnidad[1]; 
+                        $valorCampo = (string) $item['ValorCampo'];
+
+                        if($cont%3 == 0){
+                            $pdf->Ln();
+                        }
+                
+                        $pdf->SetFont('Arial', 'B', 8);
+                        $pdf->Cell(35, 3, utf8_decode($titulo)); 
+                        $pdf->SetFont('Arial', '', 8);
+                        $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                        $valorCampoDecodificado = str_replace(
+                            ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                            PHP_EOL,
+                            $valorCampoDecodificado
+                        );
+                        $textoPlano = strip_tags($valorCampoDecodificado);
+                        $pdf->Cell(25, 3, utf8_decode($textoPlano . ' ' . $unidad));
+                        $cont++;
+                    }
+                }
+                         
+            }
+
+            $pdf->Ln(3);
+
+            foreach ($xml as $item) {
+                $campos2 = [
+                    'Apariencia' => ['Apariencia:'],
+                    'CraneoCaraCuello' => ['Cráneo, cara y cuello:'],
+                    'Torax' => ['Tórax:'],
+                    'Abdomen' => ['Abdomen:'],
+                    'PielYFaneras' => ['Piel y faneras:'],
+                    'GenitoUrinario' => ['Genito-urinario:'],
+                    'Extremidades' => ['Extremidades:'],
+                    'SistemaNerviosoCentral' => ['Sistema nervioso central:'],
+                    'Conciliacionmedicamentosa' => ['Conciliación medicamentosa:'],
+                ];
+
+                foreach ($campos2 as $campo => $titulo2) {
+                    if ((string) $item['NombreCampo'] === $campo) {
+                        $valorCampo = $item['ValorCampo'];
+                        $pdf->SetFont('Arial', 'B', 8);
+                
+                        // Mantén el título con Cell, limitando el ancho a 35
+                        $pdf->Cell(42, 3, utf8_decode($titulo2[0])); // Usa índice 0 para $titulo2
+                        $pdf->SetFont('Arial', '', 8);
+                
+                        // Decodifica y procesa el valor del campo
+                        $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                        $valorCampoDecodificado = str_replace(
+                            ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                            PHP_EOL,
+                            $valorCampoDecodificado
+                        );
+                        $textoPlano = strip_tags($valorCampoDecodificado);
+                
+                        // Usa MultiCell para el valor, define el ancho límite (ejemplo: 100)
+                        $pdf->MultiCell(145, 3, utf8_decode($textoPlano)); // Ajusta el ancho (145 en este caso)
+                    }
+                }   
+                
+                  
+                         
+            }
+
+            $pdf->Ln(2);
+
+            $ultimaPosicionY = $pdf->GetY();
+            $x = 10;
+            $y = $ultimaPosicionY + 0.5;
+            $width = 190;  
+            $height = 5; 
+            $pdf->Rect($x, $y, $width, $height);
+            $pdf->SetFont('Courier', 'B', 10);
+            $texto = utf8_decode(strtoupper("OBSERVACIONES Y RESULTADOS DE PARACLÍNICOS"));
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+
+            foreach ($xml as $item) {
+                if ((string)$item['NombreCampo'] === 'ObservacionesParaclinicos') {
+                    $valorCampo = (string)$item['ValorCampo'];  
+                    if($valorCampo != ''){
+                        
+                    $pdf->SetFont('Arial', '', 8);
+                    $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                    $valorCampoDecodificado = str_replace(
+                        ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                        PHP_EOL,
+                        $valorCampoDecodificado
+                    );
+                    $textoPlano = strip_tags($valorCampoDecodificado);
+                    $pdf->MultiCell(0, 3, utf8_decode($textoPlano));
+                    }else{
+                        $pdf->Ln();
+                    }
+                }
+            }
+
+            $pdf->Ln(2);
+
+            $ultimaPosicionY = $pdf->GetY();
+            $x = 10;
+            $y = $ultimaPosicionY + 0.5;
+            $width = 190;  
+            $height = 5; 
+            $pdf->Rect($x, $y, $width, $height);
+            $pdf->SetFont('Courier', 'B', 10);
+            $texto = utf8_decode(strtoupper("ANÁLISIS"));
+            $anchoTexto = $pdf->GetStringWidth($texto);
+            $xCentrada = $x + ($width - $anchoTexto) / 2;
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
+
+            $pdf->Ln(6);
+
+            $diagnosticoPrincipal = '';
+            $diagnosticoRelacionado1 = '';
+            $mostradoDiagnosticoPrincipal = false;
+            $mostradoDiagnosticoRelacionado1 = false;
+
+            foreach ($xml as $item) {
+                $campos = [
+                    'FinalidadConsulta' => ['Finalidad de la consulta:'],
+                    'CausaExterna' => ['Causa externa:'],
+                    'TipoDiagnosticoPrincipal' => ['Tipo de diagnóstico principal:'],
+                    'PlanTratamiento' => ['Plan de Tratamiento:'],
+                    'Analisis' => ['Análisis:'],
+                    'Destino' => ['Destino del Paciente:'],
+                ];
+
+                foreach ($campos as $campo => $titulo) {
+                    if ((string) $item['NombreCampo'] === $campo) {
+                        $valorCampo = $item['ValorCampo'];
+                        $partes = explode('|', $valorCampo);
+                        if (isset($partes[1])) {
+                            $valorCampo = $partes[1]; // Esto obtiene la parte que está después de "|"
+                        }
+                        $pdf->SetFont('Arial', 'B', 8);
+
+                        // Mostrar el título y valor normal
+                        $pdf->Cell(42, 3, utf8_decode($titulo[0]));
+                        $pdf->SetFont('Arial', '', 8);
+
+                        $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
+                        $valorCampoDecodificado = str_replace(
+                            ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
+                            PHP_EOL,
+                            $valorCampoDecodificado
+                        );
+                        $textoPlano = strip_tags($valorCampoDecodificado);
+
+                        $pdf->MultiCell(145, 3, utf8_decode($textoPlano));
+                    }
+                }
+
+                if ((string) $item['NombreCampo'] === 'CodigoDiagnosticoPrincipal' || (string) $item['NombreCampo'] === 'DiagnosticoPrincipal') {
+                    $valorCampo = $item['ValorCampo'];
+                    $partes = explode('|', $valorCampo);
+                    if (isset($partes[1])) {
+                        $valorCampo = $partes[1];
+                    }
+                    $diagnosticoPrincipal .= strip_tags(html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8')) . ' ';
+                }
+
+                if ((string) $item['NombreCampo'] === 'CodigoDiagnosticoRelacionado1' || (string) $item['NombreCampo'] === 'DiagnosticoRelacionado1') {
+                    $valorCampo = $item['ValorCampo'];
+                    $partes = explode('|', $valorCampo);
+                    if (isset($partes[1])) {
+                        $valorCampo = $partes[1];
+                    }
+                    $diagnosticoRelacionado1 .= strip_tags(html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8')) . ' ';
+                }
+            }
+
+            if (!empty($diagnosticoPrincipal) && !$mostradoDiagnosticoPrincipal) {
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(42, 3, utf8_decode('Diagnóstico principal:'));
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->MultiCell(145, 3, utf8_decode($diagnosticoPrincipal));
+                $mostradoDiagnosticoPrincipal = true; // Actualizar bandera para evitar repeticiones
+            }
+
+            // Mostrar Diagnóstico Relacionado 1 combinado si existe y no ha sido mostrado
+            if (!empty($diagnosticoRelacionado1) && !$mostradoDiagnosticoRelacionado1) {
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(42, 3, utf8_decode('Diagnóstico relacionado 1:'));
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->MultiCell(145, 3, utf8_decode($diagnosticoRelacionado1));
+                $mostradoDiagnosticoRelacionado1 = true;
+            }
+
+            $pdf->Ln(1);
+
+            $pdf->SetFont('Arial', 'B', 8);
+            $pdf->Cell(45, 3, utf8_decode('Recomendaciones:'));
+            
+
+            $this->drawInformationDoctor($pdf, $patient, $maxY);
     
         } catch (Exception $e) {
             echo "Error al procesar el XML: " . $e->getMessage();
         }
-    
+
     }
 
     public function drawInformationDoctor($pdf, $patient, $maxY) {
