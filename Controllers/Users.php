@@ -138,7 +138,6 @@ class Users extends Controller{
 
         
             if (!empty($decodedData)) {
-                // Solo seleccionamos el primer registro, ya que puede haber varios duplicados
                 $patient = $decodedData[2];   
                 // Definir las coordenadas y el tamaño del cuadro
                 $x = 10;  // Coordenada X del cuadro
@@ -150,10 +149,7 @@ class Users extends Controller{
                 $pdf->Rect($x, $y, $width, $height);
 
                 // Posicionar el cursor dentro del cuadro para el contenido
-                $pdf->SetXY(10, 30);  // Ajustar la posición inicial del contenido
-
-                // Añadir los datos dentro del cuadro
-                // Definir el ancho de cada columna
+                $pdf->SetXY(10, 30);
                 $pdf->SetFont('Courier','B',10);
                 $pdf->Cell(75);
                 $pdf->MultiCell(120,1 , utf8_decode("INFORMACIÓN GENERAL"), 0, 'l', false);
@@ -162,7 +158,7 @@ class Users extends Controller{
                 $pdf->SetFont('Arial', 'B', 8);
                 $pdf->Cell(27, 1, utf8_decode("Centro de atención:"), 0);
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->Cell(61, 1, utf8_decode("01 - SEDE PRINCIPAL"));
+                $pdf->Cell(126, 1, utf8_decode("01 - SEDE PRINCIPAL"));
 
                 $pdf->SetFont('Arial', 'B', 8);
                 $pdf->Cell(14, 1, utf8_decode("Admision:"), 0);
@@ -280,7 +276,7 @@ class Users extends Controller{
                 $pdf->Cell(63, 1, utf8_decode($patient['TelAcomp']));
 
                 $pdf->SetFont('Arial', 'B', 8);
-                $pdf->Cell(30, 1, utf8_decode("Parentezco Acomp.:"), 0);
+                $pdf->Cell(28, 1, utf8_decode("Parentezco Acomp.:"), 0);
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(60, 1, utf8_decode($patient['ParentescoAcompañante']));
                 $pdf->Ln(4);
@@ -332,7 +328,7 @@ class Users extends Controller{
                 $pdf->Cell(65, 1, utf8_decode($patient['NombreEntidad']));    
 
                 $pdf->SetFont('Arial', 'B', 8);
-                $pdf->Cell(10, 1, utf8_decode("Tipo Vinculación:"), 0);
+                $pdf->Cell(24, 1, utf8_decode("Tipo Vinculación:"), 0);
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(65, 1, utf8_decode($patient['NombreEntidad']));   
 
@@ -370,6 +366,44 @@ class Users extends Controller{
 
         try {
             $xml = new SimpleXMLElement($patient['RegistroXML']);
+
+            $fechaIngreso = '';
+            $horaIngreso = '';
+            $minutosIngreso = '';
+    
+            foreach ($xml->row as $item) {
+                if ((string) $item['NombreCampo'] == 'FechaIngreso') {
+                    $fechaIngreso = (string) $item['ValorCampo'];  // Obtener la fecha de ingreso
+                } elseif ((string) $item['NombreCampo'] == 'Hora') {
+                    $partesHora = explode('|', (string) $item['ValorCampo']);
+                    $horaIngreso = $partesHora[0];  // Obtener la hora
+                } elseif ((string) $item['NombreCampo'] == 'HoraMinutos') {
+                    $partesMinutos = explode('|', (string) $item['ValorCampo']);
+                    $minutosIngreso = $partesMinutos[0];  // Obtener los minutos
+                }
+    
+                if ($fechaIngreso && $horaIngreso && $minutosIngreso) {
+                    break;
+                }
+            }
+    
+            if ($fechaIngreso && $horaIngreso && $minutosIngreso) {
+                $fechaCompleta = $fechaIngreso . ' ' . $horaIngreso . ':' . $minutosIngreso;
+
+                // Posicionar el texto en las coordenadas deseadas (10, 30)
+                $pdf->SetXY(98, 33);  // Colocar el cursor en la posición (10, 30)
+                
+                // Mostrar la fecha y hora de ingreso
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(27, 1, utf8_decode("Fecha de Atención:"), 0);
+        
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(61, 1, utf8_decode($fechaCompleta));
+                $pdf->Ln(4);
+            }
+
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Ln(4);
             
             // Iterar sobre el XML y buscar el dato específico
             foreach ($xml as $item) {
@@ -539,6 +573,43 @@ class Users extends Controller{
 
         try {
             $xml = new SimpleXMLElement($patient['RegistroXML']);
+            $fechaIngreso = '';
+            $horaIngreso = '';
+            $minutosIngreso = '';
+    
+            foreach ($xml->row as $item) {
+                if ((string) $item['NombreCampo'] == 'FechaIngreso') {
+                    $fechaIngreso = (string) $item['ValorCampo'];  // Obtener la fecha de ingreso
+                } elseif ((string) $item['NombreCampo'] == 'Hora') {
+                    $partesHora = explode('|', (string) $item['ValorCampo']);
+                    $horaIngreso = $partesHora[0];  // Obtener la hora
+                } elseif ((string) $item['NombreCampo'] == 'HoraMinutos') {
+                    $partesMinutos = explode('|', (string) $item['ValorCampo']);
+                    $minutosIngreso = $partesMinutos[0];  // Obtener los minutos
+                }
+    
+                if ($fechaIngreso && $horaIngreso && $minutosIngreso) {
+                    break;
+                }
+            }
+    
+            if ($fechaIngreso && $horaIngreso && $minutosIngreso) {
+                $fechaCompleta = $fechaIngreso . ' ' . $horaIngreso . ':' . $minutosIngreso;
+
+                // Posicionar el texto en las coordenadas deseadas (10, 30)
+                $pdf->SetXY(98, 33);  // Colocar el cursor en la posición (10, 30)
+                
+                // Mostrar la fecha y hora de ingreso
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(27, 1, utf8_decode("Fecha de Atención:"), 0);
+        
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(61, 1, utf8_decode($fechaCompleta));
+                $pdf->Ln(4);
+            }
+
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Ln(4);
             $maxY = 270;  // Ajustar según el tamaño de la página
             $counter = 0; // Contador de columnas por fila
             $diagnosticoPrincipal = ''; // Variable para almacenar el valor del diagnóstico principal temporalmente
@@ -701,6 +772,44 @@ class Users extends Controller{
 
         try {
             $xml = new SimpleXMLElement($patient['RegistroXML']);
+
+            $fechaIngreso = '';
+            $horaIngreso = '';
+            $minutosIngreso = '';
+    
+            foreach ($xml->row as $item) {
+                if ((string) $item['NombreCampo'] == 'FechaIngreso') {
+                    $fechaIngreso = (string) $item['ValorCampo'];  // Obtener la fecha de ingreso
+                } elseif ((string) $item['NombreCampo'] == 'Hora') {
+                    $partesHora = explode('|', (string) $item['ValorCampo']);
+                    $horaIngreso = $partesHora[0];  // Obtener la hora
+                } elseif ((string) $item['NombreCampo'] == 'HoraMinutos') {
+                    $partesMinutos = explode('|', (string) $item['ValorCampo']);
+                    $minutosIngreso = $partesMinutos[0];  // Obtener los minutos
+                }
+    
+                if ($fechaIngreso && $horaIngreso && $minutosIngreso) {
+                    break;
+                }
+            }
+    
+            if ($fechaIngreso && $horaIngreso && $minutosIngreso) {
+                $fechaCompleta = $fechaIngreso . ' ' . $horaIngreso . ':' . $minutosIngreso;
+
+                // Posicionar el texto en las coordenadas deseadas (10, 30)
+                $pdf->SetXY(98, 33);  // Colocar el cursor en la posición (10, 30)
+                
+                // Mostrar la fecha y hora de ingreso
+                $pdf->SetFont('Arial', 'B', 8);
+                $pdf->Cell(27, 1, utf8_decode("Fecha de Atención:"), 0);
+        
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(61, 1, utf8_decode($fechaCompleta));
+                $pdf->Ln(4);
+            }
+
+            $pdf->SetXY($xCentrada, $y );
+            $pdf->Ln(4);
             $maxY = 310;
             $planAdministradora = '';
             $tipoConsulta = '';
@@ -727,6 +836,11 @@ class Users extends Controller{
             
                         if ($item['NombreCampo'] == 'Contrareferencia' && $item['ValorCampo'] == "false") {
                             $valorCampo = 'No';
+                        }
+
+                        $partes = explode('|', $valorCampo);
+                        if (isset($partes[1])) {
+                            $valorCampo = $partes[1]; // Esto obtiene la parte que está después de "|"
                         }
 
                         $pdf->SetFont('Arial', 'B', 8);
@@ -895,9 +1009,27 @@ class Users extends Controller{
             $anchoCuadro = 120;
             $alturaCampo = 27;
             $grosorLinea = -1;
-
+            
             foreach ($xml as $item) {
-                
+                $xPosicion = $xInicial;
+                $yPosicion = $yInicial;
+            
+                if ((string) $item['NombreCampo'] === 'AntecedentesPersonales') {
+                    $valorAntecedentes = (string) $item['ValorCampo'];
+            
+                    $pdf->SetLineWidth($grosorLinea);
+                    $xCuadro = $xPosicion + $anchoCampo + 30;
+                    $pdf->Rect($xCuadro, $yPosicion, $anchoCuadro, $alturaCampo);
+            
+                    $pdf->SetXY($xCuadro + 2, $yPosicion + 2);
+                    $pdf->SetFont('Arial', '', 8);
+                    $pdf->MultiCell($anchoCuadro - 4, 5, utf8_decode($valorAntecedentes));
+                    $yPosicion += $alturaCampo;
+                    break;
+                }
+            }
+            
+            foreach ($xml as $item) {
                 $campos = [
                     'aPatologicos' => '1.Patológicos (HTA, Diabetes):',
                     'aQuirurgicos' => '2.Quirúrgicos:',
@@ -910,42 +1042,29 @@ class Users extends Controller{
                     'aOtros' => '9.Otros:', 
                     'aAlergiaMedicamento' => '10.Alergia-toxicidad a medicamentos:',
                 ];
-
-                $xPosicion = $xInicial; // Posición X de inicio
-                $yPosicion = $yInicial; // Posición Y de inicio
             
                 foreach ($campos as $campo => $titulo) {
                     if ((string) $item['NombreCampo'] === $campo) {
                         $valorCampo = (string) $item['ValorCampo'];
             
-                        // Mostrar el campo
                         $pdf->SetFont('Arial', 'B', 8);
                         $pdf->Cell(55, 3, utf8_decode($titulo));
                         $pdf->Ln();
-
                     }
                 }
-                  
-                         
             }
-
-            // Dibujar un cuadro al lado del campo
-            $pdf->SetLineWidth($grosorLinea);
-            $xCuadro = $xPosicion + $anchoCampo + 30; // Posición X del cuadro
-            $pdf->Rect($xCuadro, $yPosicion, $anchoCuadro, $alturaCampo); // Dibujar cuadro
+            
             
             // Aumentar la posición en Y para el siguiente campo
             $yPosicion += $alturaCampo;
 
-            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $ultimaPosicionY = $pdf->GetY();
             $x = 10;
             $y = $ultimaPosicionY + 0.5;
             $width = 190;  
             $height = 5; 
-    
             $pdf->Rect($x, $y, $width, $height);
             $pdf->SetFont('Courier', 'B', 10);
-    
             $texto = utf8_decode(strtoupper("FAMILIARES"));
             $anchoTexto = $pdf->GetStringWidth($texto);
             $xCentrada = $x + ($width - $anchoTexto) / 2;
@@ -1023,12 +1142,11 @@ class Users extends Controller{
                 $pdf->Ln(3);
             }
 
-            $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
+            $ultimaPosicionY = $pdf->GetY();
             $x = 10;
             $y = $ultimaPosicionY + 0.5;
             $width = 190;  
             $height = 5; 
-    
             $pdf->Rect($x, $y, $width, $height);
             $pdf->SetFont('Courier', 'B', 10);
     
@@ -1057,8 +1175,8 @@ class Users extends Controller{
             $xCentrada = $x + ($width - $anchoTexto) / 2;
             $pdf->SetXY($xCentrada, $y );
             $pdf->Cell($anchoTexto, $height, $texto, 0, 0);
-            $pdf->Ln(4);
             
+            $pdf->Ln(4);
             $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
             $x = 10;
             $y = $ultimaPosicionY + 0.5;
@@ -1071,9 +1189,8 @@ class Users extends Controller{
             $xCentrada = $x + ($width - $anchoTexto) / 2;
             $pdf->SetXY($xCentrada, $y );
             $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
-
+            
             $pdf->Ln(5);
-
             $pdf->SetFont('Arial', 'B', 8);
             $pdf->Cell(45, 3, utf8_decode('Sistema afectado:'));
             foreach ($xml as $item) {
@@ -1092,7 +1209,6 @@ class Users extends Controller{
             }
 
             $pdf->Ln(4);
-
             $ultimaPosicionY = $pdf->GetY(); // Obtiene la posición actual 'y'
             $x = 10;
             $y = $ultimaPosicionY + 0.5;
@@ -1105,7 +1221,6 @@ class Users extends Controller{
             $xCentrada = $x + ($width - $anchoTexto) / 2;
             $pdf->SetXY($xCentrada, $y );
             $pdf->Cell($anchoTexto, $height, $texto, 0, 0, 'C');
-
             $pdf->Ln(3);
 
             $cont = 0;
@@ -1169,12 +1284,9 @@ class Users extends Controller{
                     if ((string) $item['NombreCampo'] === $campo) {
                         $valorCampo = $item['ValorCampo'];
                         $pdf->SetFont('Arial', 'B', 8);
-                
-                        // Mantén el título con Cell, limitando el ancho a 35
-                        $pdf->Cell(42, 3, utf8_decode($titulo2[0])); // Usa índice 0 para $titulo2
+                        $pdf->Cell(42, 3, utf8_decode($titulo2[0]));
                         $pdf->SetFont('Arial', '', 8);
                 
-                        // Decodifica y procesa el valor del campo
                         $valorCampoDecodificado = html_entity_decode($valorCampo, ENT_QUOTES, 'UTF-8');
                         $valorCampoDecodificado = str_replace(
                             ['<p>', '</p>', '<br>', '<br/>', '<br />', '&nbsp;'],
@@ -1183,8 +1295,7 @@ class Users extends Controller{
                         );
                         $textoPlano = strip_tags($valorCampoDecodificado);
                 
-                        // Usa MultiCell para el valor, define el ancho límite (ejemplo: 100)
-                        $pdf->MultiCell(145, 3, utf8_decode($textoPlano)); // Ajusta el ancho (145 en este caso)
+                        $pdf->MultiCell(145, 3, utf8_decode($textoPlano));
                     }
                 }   
                 
@@ -1264,11 +1375,9 @@ class Users extends Controller{
                         $valorCampo = $item['ValorCampo'];
                         $partes = explode('|', $valorCampo);
                         if (isset($partes[1])) {
-                            $valorCampo = $partes[1]; // Esto obtiene la parte que está después de "|"
+                            $valorCampo = $partes[1];
                         }
                         $pdf->SetFont('Arial', 'B', 8);
-
-                        // Mostrar el título y valor normal
                         $pdf->Cell(42, 3, utf8_decode($titulo[0]));
                         $pdf->SetFont('Arial', '', 8);
 
@@ -1308,10 +1417,9 @@ class Users extends Controller{
                 $pdf->Cell(42, 3, utf8_decode('Diagnóstico principal:'));
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->MultiCell(145, 3, utf8_decode($diagnosticoPrincipal));
-                $mostradoDiagnosticoPrincipal = true; // Actualizar bandera para evitar repeticiones
+                $mostradoDiagnosticoPrincipal = true;
             }
 
-            // Mostrar Diagnóstico Relacionado 1 combinado si existe y no ha sido mostrado
             if (!empty($diagnosticoRelacionado1) && !$mostradoDiagnosticoRelacionado1) {
                 $pdf->SetFont('Arial', 'B', 8);
                 $pdf->Cell(42, 3, utf8_decode('Diagnóstico relacionado 1:'));
@@ -1325,7 +1433,6 @@ class Users extends Controller{
             $pdf->SetFont('Arial', 'B', 8);
             $pdf->Cell(45, 3, utf8_decode('Recomendaciones:'));
             
-
             $this->drawInformationDoctor($pdf, $patient, $maxY);
     
         } catch (Exception $e) {
