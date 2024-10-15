@@ -569,7 +569,7 @@ pre code {
 }
 
 .container-fluid, .container-xl, .container-lg, .container-md, .container-sm {
-  width: 100%;
+  width: 70%;
   padding-right: 0.75rem;
   padding-left: 0.75rem;
   margin-right: auto;
@@ -10116,7 +10116,7 @@ body {
   overflow-y: auto;
 }
 .sb-nav-fixed #layoutSidenav #layoutSidenav_content {
-  padding-left: 225px;
+  padding-left: 0px;
   top: 56px;
 }
 

@@ -73,9 +73,10 @@
                                             <td><?php print_r($row->Descrip); ?></td> 
                                             <td><?php print_r($row->FechaHora); ?></td> 
                                             <td class="text-center">
-                                                <form id="generatedPDF" method="POST" action="<?php echo base_url; ?>Users/createPDF" target="_blanck">
-                                                    <button class="btn btn-primary">Ver</button>
-                                                </form>
+                                            <form id="generatedPDF" method="POST" action="<?php echo base_url; ?>Users/createPDF" target="_blank">
+                                                <input type="hidden" name="idRegistro" value="<?php echo $row->IdRegistro; ?>">
+                                                <button class="btn btn-primary">Ver</button>
+                                            </form>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -127,20 +128,30 @@
 
        <!-- Modal -->
        <div class="modal fade" id="modalHelp" tabindex="-1" aria-labelledby="newModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="newModalLabel">Información de ayuda y soporte</h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <h1>Hola a todos</h1>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="#modalHelp" onclick="modalClose();">Close</button>
-                                    </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newModalLabel">Información de ayuda y soporte</h5>
+                </div>
+                <div class="modal-body">
+                    <h1 style="font-size: 16px; color: #0069d9">Se dificulta el manejo de la plataforma</h1>
+                    <h2 style="font-size: 16px; color: #0069d9">Problemas en los registros</h2>
+                    <h3 style="font-size: 14px;">Si tienes algún inconveniente con la visualización
+                         o descarga de tus registros clínicos, o si notas que algún dato en tu historial clínico 
+                         contiene errores, por favor infórmanos para poder ayudarte a resolver el problema. <br><br>
+                         Puedes contactarnos enviando un correo a <strong>archivo@perfectbody.com.co</strong> Asegúrate de incluir los siguientes detalles en tu mensaje:
+                         <br>
+                         <strong>Nombre completo</strong><br>
+                         <strong>Número de identificación</strong><br>
+                         <strong>Descripción del inconveniente o error presentado</strong><br><br>
+                        Nos comprometemos a revisar y corregir cualquier error lo antes posible. Gracias por tu paciencia.</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="#modalHelp" onclick="modalClose();">Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
       
 
 

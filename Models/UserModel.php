@@ -1,12 +1,13 @@
 <?php 
 
 class UserModel extends Query{
-
+    private $connect;
     private $connect2;
 
     public function __construct($connect,$connect2)
     {
         parent::__construct($connect);
+        $this->connect = $connect;
         $this->connect2= $connect2;
     }
     public function getUser(String $document)
@@ -18,7 +19,7 @@ class UserModel extends Query{
 
     public function getRegisters($identificacion){
         $strid = strval($identificacion);
-        $sql = "SELECT R.Nombre, U.Descrip, C.FechaHora, RH.RegistroXML
+        $sql = "SELECT R.Nombre, U.Descrip, C.FechaHora, RH.RegistroXML, RH.Id
         FROM Pacientes P
         INNER JOIN Casos C ON P.Id = C.Paciente
         INNER JOIN RegistrosHistoria RH ON C.Caso = RH.Caso
@@ -34,9 +35,10 @@ class UserModel extends Query{
 
     public function getDataPatients($identificacion){
         $strid = strval($identificacion);
-        $sql = "SELECT P.Identificacion, P.TipoID, P.Nombre AS NombrePaciente, FORMAT(CAST(P.FechaNac AS DATE), 'dd/MM/yyyy') AS FechaNacimiento, RE.Nombre, P.Etnia, P.Regimen, P.DirAfil, P.TelRes, OC.Descrip AS Profesion,
+        $sql = "SELECT  RH.Id AS IdRegistro, P.Identificacion, P.TipoID, P.Nombre AS NombrePaciente, FORMAT(CAST(P.FechaNac AS DATE), 'dd/MM/yyyy') AS FechaNacimiento, RE.Nombre, P.Etnia, P.Regimen, P.DirAfil, P.TelRes, OC.Descrip AS Profesion,
         P.GrupoPoblacional, P.Acompañante, P.TelAcomp, P.DirAcompañante, P.Responsable, P.TelResponsable, P.ParentescoAcompañante, P.DirResponsable, PR.Nombre AS NombreMedico, PR.Registro AS RegistroMedico,
-		PR.TipoDoc AS TiDocMedico, PR.Documento AS DocMedico,AD.Nombre AS NombreEntidad, CONVERT(VARCHAR(16), RH.FechaAsignacionRegistro, 120) AS FechaRegistro , RH.Caso, P.Creencia, RE.Nombre AS Religion, P.Nivel,
+		PR.TipoDoc AS TiDocMedico, PR.Documento AS DocMedico,AD.Nombre AS NombreEntidad,  SUBSTRING(CONVERT(VARCHAR, RH.FechaAsignacionRegistro, 103), 1, 10) + ' ' +
+        SUBSTRING(CONVERT(VARCHAR, RH.FechaAsignacionRegistro, 108), 1, 5) AS FechaRegistro , RH.Caso, P.Creencia, RE.Nombre AS Religion, P.Nivel,
         P.Raza, P.ParentescoAcompañante, P.ParentescoResponsable, ES.Descrip, P.Sexo, P.EstadoCivil, P.Creencia, P.Carnet, DATEDIFF(YEAR, FechaNac, GETDATE()) 
         - CASE 
             WHEN (MONTH(FechaNac) > MONTH(GETDATE())) 
@@ -61,6 +63,14 @@ class UserModel extends Query{
         return json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
+    public function getUsers()
+    {
+        $sql = "SELECT Id,numeroDocumento, primerApellido, fecharegistro FROM user_registered WHERE numeroDocumento != 'Administrador'";
+        $stmt = $this->connect->prepare($sql);  
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $data;
+    }
 
 }
 

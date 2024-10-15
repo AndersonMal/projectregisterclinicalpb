@@ -34,7 +34,7 @@
                         <div class="row justify-content-center">
                             <div class="col-lg-5">
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Inicio de sesión</h3></div>
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Cambio de contraseña</h3></div>
                                     <div class="card-body">
                                         <form id="frmLogin">
                                             <div class="form-group">
@@ -42,22 +42,24 @@
                                                 <input class="form-control py-4" id="document" name="document" type="text" placeholder="Escribe tu numero de documento" />
                                             </div>
                                             <div class="form-group">
-                                                <label class="small mb-1" for="inputPassword"><i class="fas fa-key"></i>Contraseña</label>
+                                                <label class="small mb-1" for="firstname"><i class="fas fa-user"></i>Primer Apellido</label>
+                                                <input class="form-control py-4" id="firstname" name="firstname" type="text" placeholder="Escribe primer apellido" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="small mb-1" for="inputPassword"><i class="fas fa-key"></i>Nueva contraseña</label>
+                                                <input class="form-control py-4" id="password" name="password" type="password" placeholder="Escribe tu contraseña" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="small mb-1" for="inputPassword"><i class="fas fa-key"></i>Confirmar contraseña</label>
                                                 <input class="form-control py-4" id="password" name="password" type="password" placeholder="Escribe tu contraseña" />
                                             </div>
                                             <div class="alert alert-danger text-center d-none" id="alerta" role="alert">
                                                 
                                             </div>
                                             <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                <a href="<?php echo base_url; ?>Users/changePasswordUser">¿Olvidaste tu contraseña?</a>
-                                                <button class="btn btn-primary" type="submit" onclick="frmLogin(event);">Ingresar</button>
+                                                <button class="btn btn-primary" type="submit" onclick="frmChangePassword(event);">Cambiar</button>
                                             </div>
                                         </form>
-                                    </div>
-                                    <div class="card-footer text-center">
-                                        <div class="small">
-                                            <a href="<?php echo base_url; ?>RegisterController/index">¿No te has registrado? ¡Registrate aquí!</a>                                    
-                                        </div>
                                     </div>
                                 </div>
                             </div>

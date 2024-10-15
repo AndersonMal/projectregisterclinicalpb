@@ -18,13 +18,24 @@ class RegisterModel extends Query{
     }
 
     public function saveRegister($data) {
-        $sql = "INSERT INTO user_registered (numeroDocumento, primerApellido, fechanacimiento, contraseña) VALUES (:document, :firstname, :birthdate, :password)";
+        $currentDate = date('Y-m-d H:i:s');  // Obtener la fecha actual en PHP
+        $sql = "INSERT INTO user_registered (numeroDocumento, primerApellido, fechanacimiento, contraseña, fecharegistro) 
+                VALUES (:document, :firstname, :birthdate, :password, :fecharegistro)";
         $stmt = $this->con2->prepare($sql);
         $stmt->bindParam(':document', $data['document']);
         $stmt->bindParam(':firstname', $data['firstname']);
         $stmt->bindParam(':birthdate', $data['birthdate']);
         $stmt->bindParam(':password', $data['password']);
+        $stmt->bindParam(':fecharegistro', $currentDate);  // Pasar la fecha actual como parámetro
         $stmt->execute();
+    }
+
+    public function verifyUsers($document){
+        $sql = "SELECT numeroDocumento FROM user_registered WHERE numeroDocumento = :document";
+        $stmt = $this->con2->prepare($sql);
+        $stmt->bindParam(':document', $document);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getClinicalData($identification) {

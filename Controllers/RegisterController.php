@@ -30,26 +30,29 @@ class RegisterController extends Controller {
 
                 if (empty($firstname)) {
                     $msg = "Primer apellido no encontrado";
-                } else {
+                } else{
                     $data = $this->registermodel->getRegister($user);
 
                     if ($data && $data['Ape1Afil'] == $firstname) {
                         if($password != $confirmPassword){
                             $msg = "Contraseñas no coinciden";
                         }else{
-                                
-                            $_SESSION['id_user'] = $data['Identificacion'];
-                            $_SESSION['firstname'] = $data['Ape1Afil'];
+                            $existingUser = $this->registermodel->verifyUsers($user);
+                            if ($existingUser) {
+                                $msg = "El documento ya está registrado en la base de datos";
+                            }else{
+                                        
+                                $_SESSION['id_user'] = $data['Identificacion'];
+                                $_SESSION['firstname'] = $data['Ape1Afil'];
+                                $this->registermodel->saveRegister([
+                                    'document' => $user,
+                                    'firstname' => $firstname,
+                                    'birthdate' => $birthdate,
+                                    'password' => $password
+                                ]);
 
-                            // Guardar datos en la otra base de datos
-                            $this->registermodel->saveRegister([
-                                'document' => $user,
-                                'firstname' => $firstname,
-                                'birthdate' => $birthdate,
-                                'password' => $password
-                            ]);
-
-                            $msg = "Ok";
+                                $msg = "Ok";
+                            }
                         }
                     } else {
                         $msg = "Documento incorrecto o apellido no coincide";

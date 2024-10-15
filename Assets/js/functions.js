@@ -18,18 +18,26 @@ function frmLogin(e){
         http.open("POST", url, true);
         http.send(formData);
         http.onreadystatechange = function(){
-            if(this.readyState == 4 && this.status == 200){
-                try {
-                    const res = JSON.parse(this.responseText);
-                    if(res === "Ok"){
-                        window.location = base_url + "Users/listRegistersClinical";
-                    } else {
-                        document.getElementById("alerta").classList.remove("d-none");
-                        document.getElementById("alerta").innerHTML = res;
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    try {
+                        const res = JSON.parse(this.responseText);
+                        if (res === "Admin") {
+                            window.location = base_url + "Users/panelAdmin";
+                        } else if (res === "Ok") {
+                            window.location = base_url + "Users/listRegistersClinical";
+                        } else {
+                            document.getElementById("alerta").classList.remove("d-none");
+                            document.getElementById("alerta").innerHTML = res;
+                        }
+                    } catch (error) {
+                        console.error("Error parsing JSON:", error);
+                        console.error("Response text:", this.responseText);
                     }
-                } catch (error) {
-                    console.error("Error parsing JSON:", error);
-                    console.error("Response text:", this.responseText);
+                } else {
+                    console.error("HTTP Error:", this.status);
+                    document.getElementById("alerta").classList.remove("d-none");
+                    document.getElementById("alerta").innerHTML = "Error en la solicitud: " + this.status;
                 }
             }
         }
@@ -158,3 +166,39 @@ function modalHelp1(){
 function modalClose(){
     $("#modalHelp").modal("hide");
 }
+let tblUser;
+document.addEventListener("DOMContentLoaded", function(){
+    tblUser = $('#tblUser').DataTable({
+        ajax: {
+            url: base_url + "Users/userList",
+            dataSrc: ''
+        },
+        columns: [  
+            { 'data' : 'Id' },               
+            { 'data' : 'numeroDocumento' }, 
+            { 'data' : 'primerApellido' },            
+            { 'data' : 'fecharegistro' }
+        ],
+        language: {
+            "sEmptyTable": "No hay datos disponibles en la tabla",
+            "sInfo": "Mostrando de _START_ a _END_ de _TOTAL_ entradas",
+            "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+            "sLengthMenu": "Mostrar _MENU_ entradas",
+            "sLoadingRecords": "Cargando...",
+            "sProcessing": "Procesando...",
+            "sSearch": "Buscar:",
+            "sZeroRecords": "No se encontraron resultados",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
+                "sPrevious": "Anterior"
+            },
+            "oAria": {
+                "sSortAscending": ": activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": activar para ordenar la columna de manera descendente"
+            }
+        }
+    });   
+});
+
