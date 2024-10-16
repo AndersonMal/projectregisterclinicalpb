@@ -89,6 +89,12 @@ class Users extends Controller{
         die();
     }
 
+    public function countUsersRegisters(){
+        $data = $this->model->countUsers();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
     public function createPDF(){
             require('Libraries/FPDF/fpdf.php'); 
             // Obtener los datos de la consulta

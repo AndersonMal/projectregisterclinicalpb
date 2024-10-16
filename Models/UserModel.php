@@ -72,6 +72,25 @@ class UserModel extends Query{
         return $data;
     }
 
+    public function countUsers(){
+        $sql = "SELECT 
+                    YEAR(fecharegistro) AS anio,
+                    MONTH(fecharegistro) AS mes,
+                    COUNT(*) AS cantidad_usuarios
+                FROM 
+                    user_registered
+                WHERE Id != 1
+                GROUP BY 
+                    YEAR(fecharegistro), 
+                    MONTH(fecharegistro)
+                ORDER BY 
+                    anio, mes;";
+        $stmt = $this->connect->prepare($sql);  
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $data;
+    }
+
 }
 
 ?>

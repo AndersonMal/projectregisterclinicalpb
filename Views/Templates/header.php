@@ -50,7 +50,7 @@
                                         <i class="fas fa-chart-area mr-1"></i>
                                         Pacientes registrados
                                     </div>
-                                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                                    <div class="card-body"><canvas id="usersRegisters" width="100%" height="40"></canvas></div>
                                 </div>
                             </div>
                         </div>
@@ -101,9 +101,9 @@
         <script src="<?php echo base_url; ?>Assets/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/demo/datatables-demo.js"></script>
+        <script src="<?php echo base_url; ?>Assets/js/chart.min.js"></script>
         <script>
             const base_url = "<?php echo base_url; ?>";
-            
         </script>
        
         <script src="<?php echo base_url; ?>Assets/js/functions.js"></script>
