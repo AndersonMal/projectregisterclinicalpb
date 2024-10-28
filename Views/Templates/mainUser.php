@@ -62,6 +62,7 @@
                                         <th>Registros Clínicos</th>
                                         <th>Tipo de Servicio</th>
                                         <th>Fechas</th>
+                                        <th>RegistroId</th>
                                         <th>Ver</th>
                                     </tr>
                                 </thead>
@@ -72,10 +73,11 @@
                                             <td><?php print_r($row->Nombre); ?></td> 
                                             <td><?php print_r($row->Descrip); ?></td> 
                                             <td><?php print_r($row->FechaHora); ?></td> 
+                                            <td><?php print_r($row->Id); ?></td> 
                                             <td class="text-center">
-                                            <form id="generatedPDF" method="POST" action="<?php echo base_url; ?>Users/createPDF" target="_blank">
-                                                <input type="hidden" name="idRegistro" value="<?php echo $row->IdRegistro; ?>">
-                                                <button class="btn btn-primary">Ver</button>
+                                            <form id="generatedPDF_<?php echo $row->Id; ?>" method="POST">
+                                                <input type="hidden" name="idRegistro" value="<?php echo $row->Id; ?>">
+                                                <button type="button" class="btn btn-primary ver-pdf" data-id="<?php echo $row->Id; ?>">Ver</button>
                                             </form>
                                             </td>
                                         </tr>
@@ -103,24 +105,42 @@
                     </div>
                 </main>
 
-<footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Your Website 2020</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
+        <footer class="py-4 bg-light mt-auto">
+                            <div class="container-fluid">
+                                <div class="d-flex align-items-center justify-content-between small">
+                                    <div class="text-muted">Copyright &copy; Your Website 2020</div>
+                                    <div>
+                                        <a href="#">Privacy Policy</a>
+                                        &middot;
+                                        <a href="#">Terms &amp; Conditions</a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </footer>
                     </div>
-                </footer>
-            </div>
-        </div>
+                </div>
+     
         <script src="<?php echo base_url; ?>Assets/js/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/popper.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/scripts.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const buttons = document.querySelectorAll('.ver-pdf');
+                buttons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const idRegistro = this.getAttribute('data-id');
+                        const inputIdRegistro = this.closest('form').querySelector('input[name="idRegistro"]').value;
+                        if (idRegistro === inputIdRegistro) {
+                            window.location.href = `<?php echo base_url; ?>Users/generaPDF/${idRegistro}`;
+                        } else {
+                            alert("El ID del registro no coincide.");
+                        }
+                    });
+                });
+            });
+            const base_url = "<?php echo base_url; ?>";
+        </script>
         <script src="<?php echo base_url; ?>Assets/js/functions.js"></script>
         
 

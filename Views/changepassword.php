@@ -36,7 +36,7 @@
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                                     <div class="card-header"><h3 class="text-center font-weight-light my-4">Cambio de contraseña</h3></div>
                                     <div class="card-body">
-                                        <form id="frmLogin">
+                                        <form method="POST" action="<?php echo base_url; ?>Users/changePasswordUser">
                                             <div class="form-group">
                                                 <label class="small mb-1" for="document"><i class="fas fa-user"></i>Numero de documento</label>
                                                 <input class="form-control py-4" id="document" name="document" type="text" placeholder="Escribe tu numero de documento" />
@@ -85,9 +85,6 @@
         <script src="<?php echo base_url; ?>Assets/js/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/scripts.js"></script>
-        <script>
-            const base_url = "<?php echo base_url; ?>";
-        </script>
         <script src="<?php echo base_url; ?>Assets/js/functions.js"></script>
     </body>
 </html>

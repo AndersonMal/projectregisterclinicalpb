@@ -49,7 +49,8 @@
                                                 
                                             </div>
                                             <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                <a href="<?php echo base_url; ?>Users/changePasswordUser">¿Olvidaste tu contraseña?</a>
+                                            <a href="<?php echo base_url; ?>Users/changePasswordUser" >¿Olvidaste tu contraseña?</a>
+
                                                 <button class="btn btn-primary" type="submit" onclick="frmLogin(event);">Ingresar</button>
                                             </div>
                                         </form>
@@ -80,12 +81,14 @@
                 </footer>
             </div>
         </div>
+
         <script src="<?php echo base_url; ?>Assets/js/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/scripts.js"></script>
         <script>
             const base_url = "<?php echo base_url; ?>";
-        </script>
+        </script>        
         <script src="<?php echo base_url; ?>Assets/js/functions.js"></script>
+
     </body>
 </html>

@@ -107,5 +107,7 @@
         </script>
        
         <script src="<?php echo base_url; ?>Assets/js/functions.js"></script>
+        
+        <script src="<?php echo base_url; ?>Assets/js/functionsadmin.js"></script>
     </body>
 </html>
