@@ -45,24 +45,22 @@
                         <br>
                         <ol class="breadcrumb mb-4" style="margin: 0 auto; width: 80%;">
                             <li class="breadcrumb-item active">Aquí se muestran los registros clínicos asociados a la ultima adminisión, si desea buscar un registro clínico en específico por favor escriba el nombre del registro que desea buscar, puede buscar ya sea por el nombre del registro, por el tipo del registro asociado o por la fecha.</li>
-                        </ol>
-                        
+                        </ol>   
                         <div class="container mt-5">       
+                           
                             <div class="rowSearch">
-                                <form class="d-flex">
-                                    <input type="text" class="form-control light-table-filter" data-table="table" id="search_table" placeholder="Buscar registros clinicos"  style="width: 50%">
-                                </form>
-
+                                    <label><b>Buscar registros clinicos:</b></label>
+                                    <form class="d-flex">
+                                        <input type="text" class="form-control light-table-filter" data-table="table" id="search_table" placeholder="Escribe aquí"  style="width: 50%">
+                                    </form>
                             </div>
-                            <br>
-                            <br>
+                            <br><br> 
                             <table  class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
                                         <th>Registros Clínicos</th>
                                         <th>Tipo de Servicio</th>
                                         <th>Fechas</th>
-                                        <th>RegistroId</th>
                                         <th>Ver</th>
                                     </tr>
                                 </thead>
@@ -73,7 +71,6 @@
                                             <td><?php print_r($row->Nombre); ?></td> 
                                             <td><?php print_r($row->Descrip); ?></td> 
                                             <td><?php print_r($row->FechaHora); ?></td> 
-                                            <td><?php print_r($row->Id); ?></td> 
                                             <td class="text-center">
                                             <form id="generatedPDF_<?php echo $row->Id; ?>" method="POST">
                                                 <input type="hidden" name="idRegistro" value="<?php echo $row->Id; ?>">
@@ -88,20 +85,7 @@
                                     </tr>
                                 <?php endif; ?>
                             </table>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <button class="btn btn-secondary">Anterior</button>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <button class="btn btn-secondary">Siguiente</button>
-                                </div>
-                            </div>
-
                         </div>
-
-
-
                     </div>
                 </main>
 
@@ -140,7 +124,7 @@
                 });
             });
             const base_url = "<?php echo base_url; ?>";
-        </script>
+        </script>   
         <script src="<?php echo base_url; ?>Assets/js/functions.js"></script>
         
 
@@ -155,6 +139,8 @@
                 </div>
                 <div class="modal-body">
                     <h1 style="font-size: 16px; color: #0069d9">Se dificulta el manejo de la plataforma</h1>
+                    <h4  style="font-size: 14px;">En el video podrás encontrar todo lo relacionado al manejo de la plataforma</h4>
+                    <video id="helpVideo" src="<?php echo base_url; ?>Assets/2024-03-26 09-36-36.mkv" controls style="width:100%"></video>
                     <h2 style="font-size: 16px; color: #0069d9">Problemas en los registros</h2>
                     <h3 style="font-size: 14px;">Si tienes algún inconveniente con la visualización
                          o descarga de tus registros clínicos, o si notas que algún dato en tu historial clínico 
@@ -167,7 +153,7 @@
                         Nos comprometemos a revisar y corregir cualquier error lo antes posible. Gracias por tu paciencia.</h3>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="#modalHelp" onclick="modalClose();">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="modalClose();">Close</button>
                 </div>
                 </div>
             </div>

@@ -49,8 +49,7 @@
                                                 
                                             </div>
                                             <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
-                                            <a href="<?php echo base_url; ?>Users/changePasswordUser" >¿Olvidaste tu contraseña?</a>
-
+                                                <a href="<?php echo base_url; ?>ChangePasswordController/index" >¿Olvidaste tu contraseña?</a>
                                                 <button class="btn btn-primary" type="submit" onclick="frmLogin(event);">Ingresar</button>
                                             </div>
                                         </form>

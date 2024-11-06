@@ -54,7 +54,21 @@ class RegisterModel extends Query{
         
         return $data;;
     }
-
+    public function changePassword($identificacion, $newPassword) {
+        $strid = strval($identificacion);
+        $hashedPassword = strval($newPassword); 
+        $this->con2->exec("SET SQL_SAFE_UPDATES = 0");
+        $sql = "UPDATE user_registered
+                SET contraseña = ?
+                WHERE numeroDocumento = ?";
+        $stmt = $this->con2->prepare($sql);
+        $stmt->bindParam(1, $hashedPassword, PDO::PARAM_STR);
+        $stmt->bindParam(2, $strid, PDO::PARAM_STR);
+        $result = $stmt->execute();
+        $this->con2->exec("SET SQL_SAFE_UPDATES = 1");
+        return $result;
+    }
+    
 }
 
 ?>

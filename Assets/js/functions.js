@@ -117,6 +117,63 @@ function frmRegister(e) {
     }
 }
 
+function frmChangePassword(e) {
+    e.preventDefault();
+    const user = document.getElementById("document");
+    const firstname = document.getElementById("firstname");
+    const password = document.getElementById("new_password");
+    const confirm_password = document.getElementById("confirm_password");
+
+    if(user.value == ""){
+        firstname.classList.remove("is-invalid");
+        password.classList.remove("is-invalid");
+        confirm_password.classList.remove("is-invalid");
+        user.classList.add("is-invalid");
+        user.focus();
+    }else if(firstname.value == ""){
+        user.classList.remove("is-invalid");
+        password.classList.remove("is-invalid");
+        confirm_password.classList.remove("is-invalid");
+        firstname.classList.add("is-invalid");
+        firstname.focus();
+    }else if(password.value == ""){
+        user.classList.remove("is-invalid");
+        firstname.classList.remove("is-invalid");
+        confirm_password.classList.remove("is-invalid");
+        password.classList.add("is-invalid");
+        password.focus();
+    }else if(confirm_password.value == ""){
+        user.classList.remove("is-invalid");
+        firstname.classList.remove("is-invalid");
+        password.classList.remove("is-invalid");
+        confirm_password.classList.add("is-invalid");
+        password.focus();
+    }else {
+        const url = base_url + "ChangePasswordController/validate";
+        const frm = document.getElementById("frmChangePassword");
+        const formData = new FormData(frm);
+        const http = new XMLHttpRequest();
+        http.open("POST", url, true);
+        http.send(formData);
+        http.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                try {
+                    const res = JSON.parse(this.responseText);
+                    if(res === "Ok"){
+                        window.location = base_url;
+                    } else {
+                        document.getElementById("alerta").classList.remove("d-none");
+                        document.getElementById("alerta").innerHTML = res;
+                    }
+                } catch (error) {
+                    console.error("Error parsing JSON:", error);
+                    console.error("Response text:", this.responseText);
+                }
+            }
+        }
+    }
+}
+
 (function(document){
     'search';
 
@@ -134,8 +191,8 @@ function frmRegister(e) {
         }
 
         function _filter(row) {
-            var text = row.textContent.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-            val = _input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            var text = row.textContent.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(),
+            val = _input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
          
             row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
         }
@@ -167,8 +224,3 @@ function modalClose(){
     $("#modalHelp").modal("hide");
 }
 
-function redirectionPassword(e) {
-    e.preventDefault(); // Evita la acción por defecto del enlace
-    console.log("Redirigiendo a la página de cambio de contraseña..."); // Para depuración
-    window.location.href = base_url + "Users/changePasswordUser"; // Redirige a la nueva vista
-}

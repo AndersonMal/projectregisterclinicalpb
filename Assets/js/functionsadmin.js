@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });   
 });
-
 reportUsers();
 
 function reportUsers() {
