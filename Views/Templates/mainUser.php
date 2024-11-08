@@ -109,6 +109,13 @@
         <script src="<?php echo base_url; ?>Assets/js/popper.min.js" crossorigin="anonymous"></script>
         <script src="<?php echo base_url; ?>Assets/js/scripts.js"></script>
         <script>
+
+            document.getElementById('modalHelp').addEventListener('hidden.bs.modal', function () {
+                    var video = document.getElementById('helpVideo');
+                    video.pause();
+                    video.currentTime = 0; // Opcional: reinicia el video al principio
+                });
+
             document.addEventListener("DOMContentLoaded", function() {
                 const buttons = document.querySelectorAll('.ver-pdf');
                 buttons.forEach(button => {
@@ -140,7 +147,7 @@
                 <div class="modal-body">
                     <h1 style="font-size: 16px; color: #0069d9">Se dificulta el manejo de la plataforma</h1>
                     <h4  style="font-size: 14px;">En el video podrás encontrar todo lo relacionado al manejo de la plataforma</h4>
-                    <video id="helpVideo" src="<?php echo base_url; ?>Assets/2024-03-26 09-36-36.mkv" controls style="width:100%"></video>
+                    <video id="helpVideo" src="<?php echo base_url; ?>Assets/video-manejoPlataforma.mp4" controls style="width:100%"></video>
                     <h2 style="font-size: 16px; color: #0069d9">Problemas en los registros</h2>
                     <h3 style="font-size: 14px;">Si tienes algún inconveniente con la visualización
                          o descarga de tus registros clínicos, o si notas que algún dato en tu historial clínico 
