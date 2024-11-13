@@ -110,12 +110,6 @@
         <script src="<?php echo base_url; ?>Assets/js/scripts.js"></script>
         <script>
 
-            document.getElementById('modalHelp').addEventListener('hidden.bs.modal', function () {
-                    var video = document.getElementById('helpVideo');
-                    video.pause();
-                    video.currentTime = 0; // Opcional: reinicia el video al principio
-                });
-
             document.addEventListener("DOMContentLoaded", function() {
                 const buttons = document.querySelectorAll('.ver-pdf');
                 buttons.forEach(button => {
@@ -130,6 +124,12 @@
                     });
                 });
             });
+
+            document.getElementById('modalHelp').addEventListener('hidden.bs.modal', function () {
+                    var video = document.getElementById('helpVideo');
+                    video.pause();
+                    video.currentTime = 0; // Opcional: reinicia el video al principio
+                });
             const base_url = "<?php echo base_url; ?>";
         </script>   
         <script src="<?php echo base_url; ?>Assets/js/functions.js"></script>
